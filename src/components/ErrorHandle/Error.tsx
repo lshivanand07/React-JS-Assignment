@@ -6,7 +6,7 @@ type ErrorProps = {
 
 function ErrorHandling({message}:Readonly<ErrorProps>){
     return(
-        <div className="server-error-div">
+        <div className="server-error-div" data-testid="error-component">
           <h2>Error: {message}</h2>
         </div>
     )
