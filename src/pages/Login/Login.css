@@ -1,0 +1,37 @@
+.login-div{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px black;
+    border-radius: 5px;
+    margin:auto;
+    font-size: 20px;
+}
+
+input{
+    border: 1px solid black;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.error{
+   font-size: 14px;
+   color: red;
+}
+
+
+@media screen and (max-width: 480px){
+    .login-div{
+        max-width: 200px;
+        padding: 10px;
+        gap: 3px;
+        font-size: 18px;
+    }
+
+    input{
+        font-size: 14px;
+    }
+}
