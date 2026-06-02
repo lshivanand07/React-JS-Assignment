@@ -62,6 +62,13 @@ const ProductDetails = () => {
 
   
    const handleAddCart = async (event: React.SyntheticEvent<HTMLElement>) => {
+     const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    navigate("/login");
+    return;
+  }
 
   try {
     event.preventDefault()
@@ -78,12 +85,21 @@ const ProductDetails = () => {
       stock,
       selectedItem.variant_id
     );
-  alert(data.message)
-
+    alert(data.message)
     setStockForm(false);
+    navigate("/cart");
 
   } catch (error) {
-    console.log(error);
+     setServerError(true);
+     if (error instanceof Error) {
+        setMessage(error.message);
+      } else {
+        setMessage('Something went wrong');
+      }
+    
+      if (serverError) {
+    return <ErrorHandling message={message} />;
+  }
   } finally {
     setLoading(false);
   }
