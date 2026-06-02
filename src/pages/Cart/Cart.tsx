@@ -3,6 +3,8 @@ import {fetchCartDetails} from '../../services/cartApi';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandling from '../../components/ErrorHandle/Error';
 import './Cart.css'
+import withAuth from '../../hoc/withAuth';
+import Button from '../../components/Buttons/Button';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
@@ -23,6 +25,9 @@ const Cart = () => {
       setServerError(true);
 
       if (error instanceof Error) {
+        setMessage(error.message);
+        console.log(error.message)
+      }else if(error instanceof TypeError){
         setMessage(error.message);
       } else {
         setMessage('Something went wrong');
@@ -57,6 +62,10 @@ const Cart = () => {
         <p>Color: {item.color}</p>
         <p>Size: {item.size}</p>
         <p>description: {item.description}</p>
+        <div className='Edit-Delete-btn'> 
+            <Button text="Edit" ></Button>
+           <Button text="Delete" ></Button>
+        </div>
       </div>
     ))}
     </div>
@@ -64,4 +73,5 @@ const Cart = () => {
   )
 };
 
-export default Cart;
+const ProtectedCart = withAuth(Cart);
+export default ProtectedCart;

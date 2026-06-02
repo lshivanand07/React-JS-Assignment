@@ -33,7 +33,10 @@ useEffect(() => {
             isLoggedIn ? <button onClick={handleLogout}>Logout</button> :
              <Button text='Login' onClick={()=> navigate('/login')}></Button>
            }
-           <Button text='signUp' onClick={()=> navigate('/')}></Button>
+            { 
+            isLoggedIn ? null :
+            <Button text='signUp' onClick={()=> navigate('/signup')}></Button>
+           } 
          </header>
     )
 

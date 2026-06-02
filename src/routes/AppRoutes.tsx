@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import Login from '../pages/Login/Login'
+import Signup from '../pages/SignUp/Signup'
 import Home from '../pages/Home/Home'
 import Cart from '../pages/Cart/Cart'
 import Product from '../pages/Product/Product'
-import ProtectedRoute from './ProtectedRoute'
 
 function AppRoutes() {
 
@@ -11,12 +11,9 @@ function AppRoutes() {
     <Routes>
       <Route path='/' element={<Home/>} />
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup/>} />
       <Route path='/products/:id' element={<Product/>} />
-      
-
-      <Route element={<ProtectedRoute />}>
-         <Route path='/cart' element={<Cart/>} />
-      </Route>
+      <Route path='/cart' element={<Cart/>} />
     </Routes>
   )
 }

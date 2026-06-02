@@ -137,8 +137,10 @@ const ProductDetails = () => {
         <form >
             <label htmlFor="stock">Stock</label>
             <input type="number" min={1} id="stock"  placeholder='Enter Number of stock' onChange={(event)=>setStock(Number(event.target.value))}/>
+            <div className='confirm-Cancel-btn'>
             <Button text='confirm'  onClick={handleAddCart} disabled={loading}></Button>
             <Button text='Cancel' onClick={()=>setStockForm(false)}></Button>
+            </div>
             <p className="error">{message}</p>
         </form>
      </div>
