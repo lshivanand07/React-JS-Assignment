@@ -3,6 +3,8 @@ import Home from "../src/pages/Home/Home";
 import { BrowserRouter } from "react-router-dom";
 
 describe('Home Page Testing', ()=>{
+
+    // test_No 01: renders "welcome" text
     test('renders "welcome" text', ()=>{
        render(
         <BrowserRouter>
@@ -13,6 +15,7 @@ describe('Home Page Testing', ()=>{
       expect(text).toBeInTheDocument()
     })
 
+   // test_No 01: renders Buttons
      test('renders Buttons', ()=>{
        render(
         <BrowserRouter>

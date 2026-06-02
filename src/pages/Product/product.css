@@ -4,20 +4,25 @@
     height:  auto;
 }
 
-.products{
+.product-veriants{
+    margin: 10px 0px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin: 10px auto;
+    gap: 20px;
 }
 
-.product-card{
+.product-heading{
+    text-align: center;
+}
+
+.product{
+    display: flex;
+    flex-wrap: wrap;
     margin: 0 auto;
     border: 2px solid black;
-    width: 200px;
     border-radius: 10px;
     padding: 10px;
     background-color: rgb(241, 209, 187);
+    gap: 50px;
 }
 
 .product_img{
@@ -31,6 +36,7 @@
     object-fit: contain;
 }
 
-.product-card h3, .product-card p {
-  margin: 10px;
+.add-items-in-cart-form{
+  max-width: 100px;
+  margin: 20px auto;
 }

@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 describe('Login Page', ()=>{
 
+    // test_No 01: required fields are testing
     test('required fields are testing', async()=>{
       render(
         <BrowserRouter>
@@ -18,6 +19,7 @@ describe('Login Page', ()=>{
         expect(text).toBeInTheDocument()
     })
 
+    // test_No 02: renders error component on server error
   test('renders error component on server error', async () => {
     globalThis.fetch = vi.fn().mockRejectedValueOnce(
       new Error('Server Error')
@@ -40,6 +42,7 @@ describe('Login Page', ()=>{
     expect(errorElement).toBeInTheDocument();
   });
    
+  // test_No 03: successful login api call
    test('successful login api call', async () => {
     globalThis.fetch = vi.fn();
     (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({

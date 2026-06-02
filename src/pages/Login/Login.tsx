@@ -3,6 +3,7 @@ import fetchLoginDetails from '../../services/loginApi'
 import './Login.css'
 import ErrorHandling from '../../components/ErrorHandle/Error'
 import Loader from '../../components/Loader/Loader'
+import { Navigate } from 'react-router-dom'
 function Login () {
 
 const [authenticated , setAuthenticated] = useState<boolean>(false)
@@ -26,6 +27,7 @@ const [loading, setLoading] = useState(false)
     const data = await fetchLoginDetails(email, password)
     if (data.token) {
       setAuthenticated(true)
+      localStorage.setItem("token", data.token);
     } else {
       setMessage(data.message)
     }
@@ -55,7 +57,8 @@ finally{
   }
 
   if(authenticated){
-     return <h1>Hello</h1>
+    console.log("token: ", localStorage.getItem("token"))
+     return <Navigate to="/" replace />;
   }
  }
 
@@ -68,6 +71,7 @@ finally{
 
         !loading && !serverError && !authenticated && (
         <form className='login-div'>
+          <h1>Login</h1>
          <label htmlFor="email">Email *: </label>
          <input type="text" id='email' value={email} placeholder='Enter Email'  onChange={(event)=>setEmail(event.target.value)}/>
          <label htmlFor="password">Password *: </label>

@@ -1,0 +1,26 @@
+.container{
+    margin: 0 auto;
+    max-width: 1240px;
+    height:  auto;
+}
+
+.cart-heading{
+    text-align: center;
+}
+
+.carts{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.cart{
+    border: 2px solid black;
+    padding: 20px;
+    border-radius: 20px;
+    width: 300px;
+}
+
+.cart p{
+    font-size: 18px;
+}

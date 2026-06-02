@@ -1,12 +1,13 @@
 import './Button.css'
 type ButtonProps = {
   text: string
-  onClick?: () => void
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  disabled?: boolean; 
 }
 
-function Button({ text, onClick }: Readonly<ButtonProps>) {
+function Button({ text, onClick, disabled}: Readonly<ButtonProps>) {
   return (
-    <button className="btn" onClick={onClick}>
+    <button className="btn" onClick={onClick} disabled={disabled}>
       {text}
     </button>
   )
