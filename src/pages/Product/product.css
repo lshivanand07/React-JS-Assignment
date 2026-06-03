@@ -1,9 +1,3 @@
-.container{
-    margin: 0 auto;
-    max-width: 1240px;
-    height:  auto;
-}
-
 .product-veriants{
     margin: 10px 0px;
     display: flex;

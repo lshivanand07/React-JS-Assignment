@@ -1,8 +1,13 @@
+footer{
+ background-color: rgb(26, 25, 25);
+}
+
 .footer{
-    background-color: rgb(26, 25, 25);
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
 }
+
 
 .footer p{
     color: rgb(94, 93, 93);

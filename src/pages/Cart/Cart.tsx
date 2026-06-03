@@ -5,6 +5,7 @@ import ErrorHandling from '../../components/ErrorHandle/Error';
 import './Cart.css'
 import withAuth from '../../hoc/withAuth';
 import Button from '../../components/Buttons/Button';
+import { Navigate } from 'react-router-dom';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
@@ -68,6 +69,11 @@ const Cart = () => {
         </div>
       </div>
     ))}
+    </div>
+    <Button text='Confirm'></Button>
+    <Button text='Cancel'></Button>
+    <div className='palce-order-btn'>
+        {/* <Button text='PLACE ORDER' onClick={}></Button> */}
     </div>
   </div>
   )

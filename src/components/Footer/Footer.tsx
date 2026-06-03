@@ -2,9 +2,10 @@ import './Footer.css'
 function Footer(){
     return(
         <>
-       <footer className="footer">
-        
-        <div className="About">
+       <footer>
+        <div className='container'>
+             <div className="footer">
+            <div className="About">
           <p>ABOUT</p>
           <a href="#">Contect Us</a>
           <a href="#">About Us</a>
@@ -25,6 +26,8 @@ function Footer(){
             <a href="#">Shipping</a>
             <a href="#">Cancellation</a>
             <a href="#">FAQ</a>
+        </div>
+            </div>
         </div>
        </footer>
         </>

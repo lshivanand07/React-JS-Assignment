@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import './product.css'
 import { useState } from 'react';
-import fetchProductById from '../../services/getOneProductApi'
+import { fetchProductById } from '../../services/ProductApi';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandling from '../../components/ErrorHandle/Error';
 import { useEffect } from 'react';

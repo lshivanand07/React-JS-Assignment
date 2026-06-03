@@ -1,7 +1,7 @@
 import './Home.css';
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import fetchProductDetails from "../../services/ProductApi";
+import {fetchProductDetails} from "../../services/ProductApi";
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -24,9 +24,9 @@ function Home() {
   }, []);
 
   return (
+    <div className='home-page'>
+        <Navbar />
     <div className='container'>
-      <Navbar />
-
       <div className="products">
         {products.map((product: any) => (
           <div className="product-card" key={product.product_id} onClick={()=>navigate(`/products/${product.product_id}`)}>
@@ -41,8 +41,8 @@ function Home() {
           </div>
         ))}
       </div>
-
-      <Footer />
+    </div>
+    <Footer />
     </div>
   );
 }

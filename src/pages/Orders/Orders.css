@@ -1,0 +1,17 @@
+.orders-heading{
+    text-align: center;
+}
+
+.order-items{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+     gap: 10px;
+     margin: 10px auto;
+}
+
+.items-cards{
+    border: 2px solid black;
+    padding: 10px;
+    border-radius: 10px;
+}

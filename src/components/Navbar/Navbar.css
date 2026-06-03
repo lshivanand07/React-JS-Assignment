@@ -1,5 +1,7 @@
+header{
+     background:rgb(84, 84, 246);
+}
 .navbar{
-    background:rgb(84, 84, 246);
     display:flex;
     align-items:center;
     justify-content: space-between; 
@@ -33,5 +35,42 @@
     border:none;
     outline: none;
     border-radius:4px;
+}
+
+
+.account-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.account-btn {
+  cursor: pointer;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 180px;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.account-menu:hover .dropdown {
+  display: block;
+  border-radius: 10px;
+}
+
+.dropdown p {
+  margin: 0;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown p:hover {
+  background-color: #f5f5f5;
 }
 
