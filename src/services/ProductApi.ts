@@ -25,7 +25,8 @@ export async function fetchProductById(productId:number) {
     const data = await response.json();
 
      if (!response.ok) {
-      throw new Error(data.message);
+       console.log(`${response.status} ${data.message}`)
+      throw new Error(`${response.status} ${data.message}`);
     }
 
   return data;

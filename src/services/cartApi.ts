@@ -14,7 +14,7 @@ export async function fetchCartDetails() {
     const data = await response.json();
 
      if (!response.ok) {
-      throw new Error(data.message);
+      throw new Error(`${response.status} ${data.message}`);
     }
 
   return data;
@@ -28,6 +28,7 @@ export async function addCartItems(product_id:number, quantity:number, variant_i
    headers: {
         'Content-Type': 'application/json',
          Authorization: `Bearer ${token}`
+         
       },
     body:JSON.stringify({
         product_id,

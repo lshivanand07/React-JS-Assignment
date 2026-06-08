@@ -1,6 +1,6 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL 
 
-async function signUp(user_name:string, email:string, password:string){
+async function CreateUser(user_name:string, email:string, password:string){
     const response = await fetch(`${BASE_URL}/post-one-user`,{
        method:'POST',
      headers: {
@@ -16,4 +16,4 @@ async function signUp(user_name:string, email:string, password:string){
     return await response.json()
 }
 
-export default signUp
+export default CreateUser

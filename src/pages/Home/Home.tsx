@@ -4,27 +4,17 @@ import Footer from "../../components/Footer/Footer";
 import {fetchProductDetails} from "../../services/ProductApi";
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import withErrorHandling from '../../hoc/withErrorHandling';
+import withLoader from '../../hoc/withLoader';
 
-function Home() {
-  const [products, setProducts] = useState<any[]>([]);
- const navigate = useNavigate();
+interface HomeProps {
+  products: any[]
+}
 
-  const fetchProducts = async () => {
-    try {
-      const data = await fetchProductDetails();
-      setProducts(data);
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  return (
-    <div className='home-page'>
+function Home({products}:HomeProps){
+   const navigate = useNavigate();
+  return(
+      <div className='home-page'>
         <Navbar />
     <div className='container'>
       <div className="products">
@@ -44,7 +34,34 @@ function Home() {
     </div>
     <Footer />
     </div>
-  );
+  )
 }
 
-export default Home;
+const EnhancedHome = withLoader(withErrorHandling(Home))
+
+
+function HomeContainer() {
+  const [products, setProducts] = useState<any[]>([]);
+
+  const fetchProducts = async () => {
+    try {
+      const data = await fetchProductDetails();
+      setProducts(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+return(
+  <EnhancedHome 
+  products = {products}
+  />
+)
+}
+
+export default HomeContainer;

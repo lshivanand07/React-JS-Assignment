@@ -1,83 +1,23 @@
 import React, { useState } from "react"
 import './Signup.css'
 import Button from "../../components/Buttons/Button"
-import signUp from "../../services/signUpApi"
-import Loader from "../../components/Loader/Loader"
-import ErrorHandling from "../../components/ErrorHandle/Error"
-import { Navigate } from "react-router-dom"
+import validateSignup from "../../components/validations/validations"
+import withLoader from "../../hoc/withLoader"
+import withErrorHandling from "../../hoc/withErrorHandling"
+import CreateUser from "../../services/signUpApi"
 
-function Signup(){
+interface SignupProps {
+    userRegistration: ()=>void
+    message: string
+    userName: string; setUserName: (value:string)=> void
+    userEmail: string; setUserEmail: (value:string)=> void
+    userPassword:string; setUserPassword: (value:string)=> void
+    confirmPassword:string;  setConfirmPassword: (value:string)=> void
+}
 
-    const [userName, setUserName] = useState<any>('')
-    const [userEmail, setUserEmail] = useState<any>('')
-    const [userPassword, setUserPassword] = useState<any>('')
-    const [confirmPassword, setConfirmPassword] = useState('')
-    const [message, setMessage] = useState<string>('')
-    const [serverError, setServerError] = useState<boolean>(false)
-    const [loading, setLoading] = useState(false)
-    const [registration, setRegistration] = useState(false)
-
-    const userRegistration  = async (event: React.SyntheticEvent<HTMLElement>)=>{
-        try{
-            event.preventDefault()
-
-          setLoading(true)
-            if(!userName){
-                return setMessage("Enter user name")
-            }
-            if(!userEmail){
-                return setMessage("Enter Email")
-            }
-            if(!userPassword){
-               return setMessage("Enter password")
-            }
-            if(!confirmPassword){
-               return setMessage("Enter confirm password")
-            }
-            if(userPassword !== confirmPassword){
-               return setMessage("password does not match.")
-            }
-
-            const data = await signUp(userName, userEmail, userPassword)
-            alert(data.message)
-
-            setRegistration(true)
-        }
-        catch(error){
-          setServerError(true)
-           if (error instanceof TypeError) {
-            setMessage(error.message)
-            } else if (error instanceof Error) {
-            setMessage(error.message)
-            } else {
-            setMessage('Something went wrong')
-            }
-        }finally{
-         setLoading(false)
-        }
-    }
-
-    function renderContent (){
-        if(loading){
-            return <Loader />
-        }
-
-        if(serverError){
-         return <ErrorHandling message={message} /> 
-        }
-
-        if(registration){
-         return <Navigate to="/" replace/>
-        }
-    }
-
-     return(
-        <>
-        {
-            renderContent()
-        }
-        {
-            <div className="container">
+function Signup ({userRegistration, message, userName, setUserName, userEmail, setUserEmail, userPassword, setUserPassword, confirmPassword, setConfirmPassword}: SignupProps){
+    return(
+         <div className="container">
             <form className="signup-div">
                 <h1 className="sign-up-heading">Sign Up</h1>
                 <label htmlFor="user_name">Name*: </label>
@@ -92,9 +32,53 @@ function Signup(){
                 <p className="error">{message}</p>
             </form>
         </div>
+    )
+}
+
+const EnhancedSignup = withLoader(withErrorHandling(Signup))
+
+function SignupContainer(){
+
+    const [userName, setUserName] = useState<any>('')
+    const [userEmail, setUserEmail] = useState<any>('')
+    const [userPassword, setUserPassword] = useState<any>('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [message, setMessage] = useState<string>('')
+    const [serverError, setServerError] = useState<boolean>(false)
+    const [loading, setLoading] = useState(false)
+
+    const userRegistration  = async (event: React.SyntheticEvent<HTMLElement>)=>{
+        try{
+            event.preventDefault()
+          setLoading(true)
+          const error = await validateSignup(userName, userEmail, userPassword, confirmPassword)
+          console.log(error)
+          if (error) {
+            setMessage(error);
+            return;
+          }
+        const data = await CreateUser(userName, userEmail, userPassword)
+        alert(data.message)
         }
-        </>
+        catch(error){
+          setServerError(true)
+        }finally{
+         setLoading(false)
+        }
+    }
+
+     return(
+        <EnhancedSignup 
+        loading = {loading}
+        serverError = {serverError}
+        userRegistration = {userRegistration}
+        message = {message}
+        userName = {userName} setUserName = {setUserName}
+        userEmail = {userEmail} setUserEmail = {setUserEmail}
+        userPassword = {userPassword} setUserPassword = {setUserPassword}
+        confirmPassword= {confirmPassword} setConfirmPassword = {setConfirmPassword}
+        />
      )
 }
 
-export default Signup
+export default  SignupContainer;

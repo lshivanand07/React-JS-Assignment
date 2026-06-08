@@ -2,51 +2,16 @@ import './Orders.css'
 import { useEffect, useState } from "react"
 import Footer from "../../components/Footer/Footer"
 import Navbar from "../../components/Navbar/Navbar"
-import withAuth from "../../hoc/withAuth"
 import { userOrders } from "../../services/ordersApi"
-import Loader from "../../components/Loader/Loader"
-import ErrorHandling from "../../components/ErrorHandle/Error"
+import withLoader from '../../hoc/withLoader'
+import withErrorHandling from '../../hoc/withErrorHandling'
 
-function Orders () {
-     const [serverError, setServerError] = useState<boolean>(false)
-    const [loading, setLoading] = useState(false)
-   const [message, setMessage] = useState<string>('')
-   const [userData, setUserData] = useState<any>(null)
-
-    const fetchUserOrders = async()=>{
-     try{
-        setLoading(true)
-     const data =  await userOrders();
-     console.log(data[0])
-     setUserData(data[0]) 
-     }
-     catch(error){
-     setServerError(true)
-     if(error instanceof TypeError){
-        setMessage(error.message)
-     }else if(error instanceof Error){
-        setMessage(error.message)
-     }else{
-        setMessage('Something went wrong')
-     }
-     }
-     finally{
-       setLoading(false)
-     }
+interface OrdersProps {
+   userData : any[]
 }
 
-useEffect(()=>{fetchUserOrders();},[])
-
-    
- if(loading){
-    return <Loader/>
- }
-
- if(serverError){
-    return <ErrorHandling message={message}/>
- }
-
-   return (
+function Orders ({userData}:OrdersProps) {
+   return(
       <div className="orders">
        <Navbar/>
         <div className="container">
@@ -74,5 +39,36 @@ useEffect(()=>{fetchUserOrders();},[])
    )
 }
 
-const protectedOrders = withAuth(Orders)
-export default protectedOrders
+const EnhancedOrders = withErrorHandling(withLoader(Orders))
+
+function OrdersContainer () {
+     const [serverError, setServerError] = useState<Error | null >(null)
+    const [loading, setLoading] = useState(false)
+   const [userData, setUserData] = useState<any>(null)
+
+    const fetchUserOrders = async()=>{
+     try{
+        setLoading(true)
+     const data =  await userOrders();
+     setUserData(data[0]) 
+     }
+     catch(error){
+     setServerError(error as Error)
+     }
+     finally{
+       setLoading(false)
+     }
+}
+
+useEffect(()=>{fetchUserOrders();},[])
+
+   return (
+      <EnhancedOrders
+      serverError = {serverError}
+      loading = {loading}
+      userData = {userData}
+      />
+   )
+}
+
+export default OrdersContainer

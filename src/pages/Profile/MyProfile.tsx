@@ -1,19 +1,94 @@
 import './MyProfile.css'
 import { fetchUserById } from "../../services/userApi"
-import Loader from "../../components/Loader/Loader"
 import { useEffect, useState } from "react"
-import ErrorHandling from "../../components/ErrorHandle/Error"
-import withAuth from "../../hoc/withAuth"
 import Navbar from "../../components/Navbar/Navbar"
-import Footer from "../../components/Footer/Footer"
+import Footer from "../../components/Footer/Footer" 
+import prsonImage from '../../assets/person.png'
+import Button from '../../components/Buttons/Button'
+import { useNavigate } from 'react-router-dom'
+import { fetchUserAddressById } from '../../services/addressApi'
+import  withLoader from '../../hoc/withLoader'
+import  withErrorHandling from '../../hoc/withErrorHandling'
 
-function MyProfile (){
+interface MyProfileProps {
+activeTab : string
+fetchUserInfo: ()=> void
+fetchAddressInfo : ()=> void
+handleLogout: () => void
+userData : any;
+addressData :  any;
+
+}
+
+function MyProfile ({activeTab, fetchUserInfo, fetchAddressInfo, handleLogout, userData, addressData}:MyProfileProps) {
+    return(
+        <>
+         <>
+       <div>
+         <Navbar/>
+         <div className="container">
+        <div className='dashboard'>
+            <div className='dashboard-buttons'>
+                <div className='person-name-img'>
+                    <img src={prsonImage} alt="person Img" />
+                   <h3>{userData?.user_name}</h3>
+                </div>
+            <Button text='Personal Info' onClick={fetchUserInfo}></Button>
+            <Button text='Addresses' onClick={(fetchAddressInfo)}></Button>
+            <Button text='Logout' onClick={handleLogout}></Button>
+            </div>
+      
+      <div className='dashboard-info'>
+   
+       { activeTab === 'profile' && userData  && (
+            <>
+          <h1 className="dashboard-info-heading">My Profile</h1>
+           <h3>User_id: {userData?.User_id}</h3>
+          <p>Email: {userData?.email}</p>
+          <p>DOB: {userData?.dob}</p>
+          <p>age: {userData?.age}</p>
+          <p>Gender: {userData?.gender}</p>
+          <p>phone: {userData?.phone}</p>
+          <p>role: {userData?.role}</p>
+            </>
+          )
+       }
+
+        {activeTab === 'address' && addressData  && (
+        <>
+          <h1 className='dashboard-info-heading'>My Address</h1>
+          <p>Address ID: {addressData?.address_id}</p>
+          <p>Address Status: {addressData?.user_address_status}</p>
+          <p>country: {addressData?.country}</p>
+          <p>State: {addressData?.state}</p>
+          <p>Districts: {addressData?.districts}</p>
+          <p>City: {addressData?.city}</p>
+          <p>Street: {addressData?.street}</p>
+          <p>Landmark: {addressData?.landmark}</p>
+          <p>Pincode: {addressData?.pincode}</p>
+        </>
+         )}
+            </div>
+        </div>
+         </div>
+          <Footer/>
+       </div>
+       </>
+        </>
+    )
+}
+
+const EnhancedMyProfile = withLoader(withErrorHandling(MyProfile))
+
+function MyProfileContainer (){
+
+    const navigate = useNavigate()
     
-
-    const [serverError, setServerError] = useState<boolean>(false)
+    const [serverError, setServerError] = useState<Error | null>(null)
     const [loading, setLoading] = useState(false)
-   const [message, setMessage] = useState<string>('')
    const [userData, setUserData] = useState<any>(null)
+   const [addressData, setAddressData] = useState<any>(null)
+   const [activeTab, setActiveTab] = useState<'profile' | 'address'>('profile');
     
     const fetchUserInfo = async()=>{
         try{
@@ -21,16 +96,11 @@ function MyProfile (){
         const data = await fetchUserById();
         console.log(data[0][0])
          setUserData(data[0][0])
+        setActiveTab('profile')
+         navigate('/profile')
      }
     catch(error){
-     setServerError(true)
-        if (error instanceof TypeError) {
-        setMessage(error.message)
-        } else if (error instanceof Error) {
-        setMessage(error.message)
-        } else {
-        setMessage('Something went wrong')
-        }
+     setServerError(error as Error)
     }
      finally{
     setLoading(false)
@@ -39,38 +109,44 @@ function MyProfile (){
 
     useEffect(()=>{fetchUserInfo();}, [])
 
-    if(serverError){
-        return <ErrorHandling  message={message} />
+    const fetchAddressInfo = async() =>{
+       try{
+       setLoading(true)
+         const data = await fetchUserAddressById()
+         console.log(data[0][0])
+         setAddressData(data[0][0])
+         setActiveTab('address')
+         navigate('/profile/address')
+       }
+       catch(error){
+     setServerError(error as Error)
     }
-    
-    if(loading){
-        return <Loader/>
+     finally{
+    setLoading(false)
     }
+    }
+
+
+    const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+
     return (
-       <>
-       <div>
-         <Navbar/>
-         <div className="container">
-      <h1 className="My-profile-heading">My Profile</h1>
-      
-       {userData && (
-        <>
-          <h3>Name: {userData?.user_name}</h3>
-          <h3>User_id: {userData?.User_id}</h3>
-          <p>Email: {userData?.email}</p>
-          <p>DOB: {userData?.dob}</p>
-          <p>age: {userData?.age}</p>
-          <p>Gender: {userData?.gender}</p>
-          <p>phone: {userData?.phone}</p>
-          <p>role: {userData?.role}</p>
-        </>
-      )}
-         </div>
-          <Footer/>
-       </div>
-       </>
+    <EnhancedMyProfile
+      serverError = {serverError}
+      loading = {loading}
+      activeTab = {activeTab}
+      fetchUserInfo = {fetchUserInfo}
+      fetchAddressInfo = {fetchAddressInfo}
+      handleLogout = {handleLogout}
+      userData = {userData}
+      addressData = {addressData}
+    />
+
     )
 }
 
-const protectedMyprofile  = withAuth(MyProfile)
-export default protectedMyprofile
+
+export default MyProfileContainer

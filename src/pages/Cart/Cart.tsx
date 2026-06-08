@@ -1,56 +1,24 @@
 import { useEffect, useState } from 'react';
 import {fetchCartDetails} from '../../services/cartApi';
-import Loader from '../../components/Loader/Loader';
-import ErrorHandling from '../../components/ErrorHandle/Error';
 import './Cart.css'
-import withAuth from '../../hoc/withAuth';
 import Button from '../../components/Buttons/Button';
-import { Navigate } from 'react-router-dom';
+import { checkoutOrder } from '../../services/checkoutApi';
+import withLoader from '../../hoc/withLoader';
+import withErrorHandling from '../../hoc/withErrorHandling';
 
-const Cart = () => {
-  const [cartItems, setCartItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState(false);
-  const [message, setMessage] = useState('');
+interface CartListProps {
+  cartItems: any[];
+  showConfirm: boolean;
+  message: string;
+  handlePlaceOrder: () => void;
+  handleCancelOrder: () => void;
+  handleConfirmOrder: () => void;
+}
 
-  const cartData = async () => {
-    try {
-      setLoading(true);
-      setServerError(false);
 
-      const data = await fetchCartDetails();
+const CartDataList = ({cartItems, showConfirm, message, handlePlaceOrder, handleCancelOrder, handleConfirmOrder}: CartListProps) =>{
 
-      console.log(data);
-      setCartItems(data);
-    } catch (error) {
-      setServerError(true);
-
-      if (error instanceof Error) {
-        setMessage(error.message);
-        console.log(error.message)
-      }else if(error instanceof TypeError){
-        setMessage(error.message);
-      } else {
-        setMessage('Something went wrong');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    cartData();
-  }, []);
-
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (serverError) {
-    return <ErrorHandling message={message} />;
-  }
-
-  return (
+  return(
      <div className='container'>
     <h1 className='cart-heading'>My Cart</h1>
    <div className='carts'>
@@ -70,14 +38,92 @@ const Cart = () => {
       </div>
     ))}
     </div>
-    <Button text='Confirm'></Button>
-    <Button text='Cancel'></Button>
+    {showConfirm && (
+     <div className="overlay">
+     <div className="confirm-modal">
+      <h3>Are you sure you want to place this order?</h3>
+     <div className='order-confirm-cancel-btn'>
+      <button onClick={handleConfirmOrder} >Confirm</button>
+      <button onClick={handleCancelOrder}>Cancel</button>
+    </div>
+    <p className="error">{message}</p>
+    </div>
+    </div>
+   )}
     <div className='palce-order-btn'>
-        {/* <Button text='PLACE ORDER' onClick={}></Button> */}
+        <Button text='PLACE ORDER' disabled={showConfirm} onClick={handlePlaceOrder}></Button>
     </div>
   </div>
   )
+}
+
+const EnhancedCartList = withLoader(withErrorHandling(CartDataList));
+
+
+
+const CartDataContainer = () => {
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [serverError, setServerError] = useState<Error | null>(null);
+  const [message, setMessage] = useState('');
+
+  const [showConfirm , setShowConfirm] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const fetchCartItems = async () => {
+    try {
+      setLoading(true);
+
+      const data = await fetchCartDetails();
+      setMessage(data.message)
+      setCartItems(data);
+    } catch (error) {
+      setServerError(error as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
+
+    const handlePlaceOrder = () => {
+    setShowConfirm(true);
+  };
+
+  const handleConfirmOrder = async() => {
+    setShowConfirm(true);
+    try{
+        setLoading(true)
+    const data = await checkoutOrder()
+    console.log(data)
+    setMessage(data.message)
+    }
+   catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    const handleCancelOrder = () => {
+    setShowConfirm(false);
+    console.log('hello')
+  };
+
+
+  return (
+    <EnhancedCartList 
+  loading={loading}
+  serverError={serverError}
+  cartItems={cartItems}
+  showConfirm={showConfirm}
+  message={message}
+  handlePlaceOrder={handlePlaceOrder}
+  handleCancelOrder={handleCancelOrder}
+  handleConfirmOrder={handleConfirmOrder}/>
+  )
 };
 
-const ProtectedCart = withAuth(Cart);
-export default ProtectedCart;
+export default CartDataContainer
+
+
