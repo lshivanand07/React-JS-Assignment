@@ -7,6 +7,7 @@ import MyProfileContainer from '../pages/Profile/MyProfile'
 import Orders from '../pages/Orders/Orders'
 import ProtectedRoutes from './ProtectedRoutes'
 import CartContainer from '../pages/Cart/Cart'
+import AddressContainer from '../pages/Addresses/Address'
 
 function AppRoutes() {
 
@@ -15,11 +16,14 @@ function AppRoutes() {
       <Route path='/' element={<Home/>} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignupContainer />} />
-      <Route path='/products/:id' element={<ProtectedRoutes> <Product/> </ProtectedRoutes>} />
-      <Route path='/cart' element={<ProtectedRoutes> <CartContainer /> </ProtectedRoutes>} />
-      <Route path="/profile" element={<ProtectedRoutes> <MyProfileContainer/> </ProtectedRoutes>} />
-      <Route path='/profile/address' element={<ProtectedRoutes> <MyProfileContainer/> </ProtectedRoutes>} />
-      <Route path='/orders' element={<ProtectedRoutes> <Orders/> </ProtectedRoutes>} />
+      <Route element={<ProtectedRoutes />}>
+          <Route path='/products/:id' element={<Product />} />
+          <Route path="/cart" element={<CartContainer />} />=
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/profile" element={<MyProfileContainer />} />
+          <Route path='/address' element={<MyProfileContainer />} />
+          <Route path='/add-user-address' element={<AddressContainer/>} />
+     </Route>
     </Routes>
   )
 }

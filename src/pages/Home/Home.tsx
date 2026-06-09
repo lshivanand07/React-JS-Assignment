@@ -28,6 +28,7 @@ function Home({products}:HomeProps){
             <p>Size: {product.size}</p>
             <p>Color: {product.color}</p>
             <p>₹{product.price}</p>
+            <p>Discount_percentage: {product.discount_percentage}%</p>
           </div>
         ))}
       </div>

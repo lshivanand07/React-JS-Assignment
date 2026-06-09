@@ -36,6 +36,7 @@ function OneProductDetails ({productItems, loading, setSelectedItem, handleAddCa
         <p>Size: {item.size}</p>
         <p>Color: {item.color}</p>
         <p>₹{item.price}</p>
+        <p>Discount_percentage: {item.discount_percentage}%</p>
         <div>
            <Button text='add cart' disabled={loading} onClick={()=>{setSelectedItem(item); setStockForm(true) }} ></Button>
         </div>

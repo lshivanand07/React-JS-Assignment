@@ -4,23 +4,27 @@ import { useEffect, useState } from "react"
 import Navbar from "../../components/Navbar/Navbar"
 import Footer from "../../components/Footer/Footer" 
 import prsonImage from '../../assets/person.png'
+import noAddressFound  from '../../assets/noAddressFound.png'
 import Button from '../../components/Buttons/Button'
 import { useNavigate } from 'react-router-dom'
 import { fetchUserAddressById } from '../../services/addressApi'
 import  withLoader from '../../hoc/withLoader'
 import  withErrorHandling from '../../hoc/withErrorHandling'
+import AddressContainer from '../Addresses/Address'
 
 interface MyProfileProps {
-activeTab : string
+activeTab : string; setActiveTab: (value:string)=> void
 fetchUserInfo: ()=> void
 fetchAddressInfo : ()=> void
 handleLogout: () => void
 userData : any;
 addressData :  any;
-
 }
 
-function MyProfile ({activeTab, fetchUserInfo, fetchAddressInfo, handleLogout, userData, addressData}:MyProfileProps) {
+function MyProfile ({activeTab, setActiveTab, fetchUserInfo, fetchAddressInfo, handleLogout, userData, addressData}:MyProfileProps) {
+    
+    // const navigate = useNavigate()
+
     return(
         <>
          <>
@@ -68,6 +72,26 @@ function MyProfile ({activeTab, fetchUserInfo, fetchAddressInfo, handleLogout, u
           <p>Pincode: {addressData?.pincode}</p>
         </>
          )}
+
+         { activeTab === 'address' && !addressData && (
+            <>
+              <div className='no-addresses-found'>
+                <img src={noAddressFound} alt="person Img"/>
+              <h3>No Addresses found in your account!</h3>
+              <p>Add a delivery address.</p>
+             <Button text='ADD ADDRESSES' onClick={()=>setActiveTab('addNewAddress')}></Button>
+              </div>
+            </>
+         )
+         }
+
+         {
+            activeTab === 'addNewAddress' && (
+                <>
+                <AddressContainer />
+                </>
+            )
+         }
             </div>
         </div>
          </div>
@@ -88,7 +112,7 @@ function MyProfileContainer (){
     const [loading, setLoading] = useState(false)
    const [userData, setUserData] = useState<any>(null)
    const [addressData, setAddressData] = useState<any>(null)
-   const [activeTab, setActiveTab] = useState<'profile' | 'address'>('profile');
+   const [activeTab, setActiveTab] = useState<'profile' | 'address' | 'addNewAddress'>('profile');
     
     const fetchUserInfo = async()=>{
         try{
@@ -107,7 +131,7 @@ function MyProfileContainer (){
     }
     }
 
-    useEffect(()=>{fetchUserInfo();}, [])
+  useEffect(()=>{fetchUserInfo();}, [])
 
     const fetchAddressInfo = async() =>{
        try{
@@ -116,7 +140,12 @@ function MyProfileContainer (){
          console.log(data[0][0])
          setAddressData(data[0][0])
          setActiveTab('address')
-         navigate('/profile/address')
+
+         if(!data[0][0]){
+            setAddressData(null)
+            setActiveTab('address')
+         }
+         navigate('/address')
        }
        catch(error){
      setServerError(error as Error)
@@ -125,7 +154,6 @@ function MyProfileContainer (){
     setLoading(false)
     }
     }
-
 
     const handleLogout = () => {
     localStorage.removeItem('token');
@@ -138,6 +166,7 @@ function MyProfileContainer (){
       serverError = {serverError}
       loading = {loading}
       activeTab = {activeTab}
+      setActiveTab = {setActiveTab}
       fetchUserInfo = {fetchUserInfo}
       fetchAddressInfo = {fetchAddressInfo}
       handleLogout = {handleLogout}

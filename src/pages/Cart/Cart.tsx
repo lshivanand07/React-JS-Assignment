@@ -2,21 +2,17 @@ import { useEffect, useState } from 'react';
 import {fetchCartDetails} from '../../services/cartApi';
 import './Cart.css'
 import Button from '../../components/Buttons/Button';
-import { checkoutOrder } from '../../services/checkoutApi';
 import withLoader from '../../hoc/withLoader';
 import withErrorHandling from '../../hoc/withErrorHandling';
+import { useNavigate } from 'react-router-dom';
 
 interface CartListProps {
   cartItems: any[];
-  showConfirm: boolean;
-  message: string;
-  handlePlaceOrder: () => void;
-  handleCancelOrder: () => void;
-  handleConfirmOrder: () => void;
+  placeOrders : ()=> void
 }
 
 
-const CartDataList = ({cartItems, showConfirm, message, handlePlaceOrder, handleCancelOrder, handleConfirmOrder}: CartListProps) =>{
+const CartDataList = ({cartItems, placeOrders}: CartListProps) =>{
 
   return(
      <div className='container'>
@@ -31,6 +27,7 @@ const CartDataList = ({cartItems, showConfirm, message, handlePlaceOrder, handle
         <p>Color: {item.color}</p>
         <p>Size: {item.size}</p>
         <p>description: {item.description}</p>
+        <p>Discount_percentage: {item.discount_percentage}%</p>
         <div className='Edit-Delete-btn'> 
             <Button text="Edit" ></Button>
            <Button text="Delete" ></Button>
@@ -38,20 +35,8 @@ const CartDataList = ({cartItems, showConfirm, message, handlePlaceOrder, handle
       </div>
     ))}
     </div>
-    {showConfirm && (
-     <div className="overlay">
-     <div className="confirm-modal">
-      <h3>Are you sure you want to place this order?</h3>
-     <div className='order-confirm-cancel-btn'>
-      <button onClick={handleConfirmOrder} >Confirm</button>
-      <button onClick={handleCancelOrder}>Cancel</button>
-    </div>
-    <p className="error">{message}</p>
-    </div>
-    </div>
-   )}
     <div className='palce-order-btn'>
-        <Button text='PLACE ORDER' disabled={showConfirm} onClick={handlePlaceOrder}></Button>
+        <Button text='PLACE ORDER' onClick={placeOrders}></Button>
     </div>
   </div>
   )
@@ -62,19 +47,17 @@ const EnhancedCartList = withLoader(withErrorHandling(CartDataList));
 
 
 const CartDataContainer = () => {
+
+  const navigate = useNavigate()
+
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [serverError, setServerError] = useState<Error | null>(null);
-  const [message, setMessage] = useState('');
-
-  const [showConfirm , setShowConfirm] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const fetchCartItems = async () => {
     try {
       setLoading(true);
-
       const data = await fetchCartDetails();
-      setMessage(data.message)
       setCartItems(data);
     } catch (error) {
       setServerError(error as Error);
@@ -87,40 +70,20 @@ const CartDataContainer = () => {
     fetchCartItems();
   }, []);
 
-    const handlePlaceOrder = () => {
-    setShowConfirm(true);
-  };
-
-  const handleConfirmOrder = async() => {
-    setShowConfirm(true);
-    try{
-        setLoading(true)
-    const data = await checkoutOrder()
-    console.log(data)
-    setMessage(data.message)
-    }
-   catch (error) {
-    } finally {
-      setLoading(false);
-    }
-  };
-
-    const handleCancelOrder = () => {
-    setShowConfirm(false);
-    console.log('hello')
-  };
-
+  function placeOrders () {
+    navigate('/orders',{
+      state:{
+        showPaymentMethodChoice:true
+      }
+    })
+  }
 
   return (
     <EnhancedCartList 
   loading={loading}
   serverError={serverError}
-  cartItems={cartItems}
-  showConfirm={showConfirm}
-  message={message}
-  handlePlaceOrder={handlePlaceOrder}
-  handleCancelOrder={handleCancelOrder}
-  handleConfirmOrder={handleConfirmOrder}/>
+  cartItems={cartItems} 
+  placeOrders = {placeOrders} />
   )
 };
 
