@@ -5,6 +5,7 @@ import validateSignup from "../../components/validations/validations"
 import withLoader from "../../hoc/withLoader"
 import withErrorHandling from "../../hoc/withErrorHandling"
 import CreateUser from "../../services/signUpApi"
+import { useNavigate } from "react-router-dom"
 
 interface SignupProps {
     userRegistration: ()=>void
@@ -39,6 +40,7 @@ const EnhancedSignup = withLoader(withErrorHandling(Signup))
 
 function SignupContainer(){
 
+    const navigate = useNavigate();
     const [userName, setUserName] = useState<any>('')
     const [userEmail, setUserEmail] = useState<any>('')
     const [userPassword, setUserPassword] = useState<any>('')
@@ -51,7 +53,7 @@ function SignupContainer(){
         try{
             event.preventDefault()
           setLoading(true)
-          const error = await validateSignup(userName, userEmail, userPassword, confirmPassword)
+          const error = validateSignup(userName, userEmail, userPassword, confirmPassword)
           console.log(error)
           if (error) {
             setMessage(error);
@@ -59,6 +61,7 @@ function SignupContainer(){
           }
         const data = await CreateUser(userName, userEmail, userPassword)
         alert(data.message)
+        navigate('/')
         }
         catch(error){
           setServerError(true)

@@ -40,26 +40,3 @@
     justify-content: flex-end;
     margin-left: auto;
 }
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.confirm-modal {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  min-width: 300px;
-}
-
-.order-confirm-cancel-btn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-}
