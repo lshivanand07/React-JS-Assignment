@@ -8,7 +8,6 @@ function Navbar(){
 
   const [searchMessage, setSearchMessage] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showMenu, setShowMenu] = useState(false)
   const navigate = useNavigate();
 
 useEffect(() => {
