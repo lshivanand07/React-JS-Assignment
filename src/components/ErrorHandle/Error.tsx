@@ -1,17 +1,21 @@
-import './Error.css'
+import './Error.css';
+import Button from '../Buttons/Button';
 
 type ErrorProps = {
-  message: string
+  message: string;
+};
 
+function ErrorHandling({ message }: Readonly<ErrorProps>) {
+  return (
+    <div className="container">
+      <div className="error-page">
+        <div className="error-icon">⚠️</div>
+        <h2>Something went wrong</h2>
+        <p className="error-message">{message}</p>
+        <Button text="Retry" onClick={() => window.location.reload()} />
+      </div>
+    </div>
+  );
 }
 
-function ErrorHandling({message}:Readonly<ErrorProps>){
-
-    return(
-        <div className="server-error-div" data-testid="error-component">
-          <h2>Error: {message}</h2>
-        </div>
-    )
-}
-
-export default ErrorHandling
+export default ErrorHandling;

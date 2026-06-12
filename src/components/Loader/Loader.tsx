@@ -1,8 +1,6 @@
-import './Loader.css'
-function Loader(){
-    return(
-        <div className="loader"></div>
-    )
+import './Loader.css';
+function Loader() {
+  return <div className="loader"></div>;
 }
 
-export default Loader
+export default Loader;

@@ -1,16 +1,16 @@
-import './Button.css'
+import './Button.css';
 type ButtonProps = {
-  text: string
+  text: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  disabled?: boolean; 
-}
+  disabled?: boolean;
+};
 
-function Button({ text, onClick, disabled}: Readonly<ButtonProps>) {
+function Button({ text, onClick, disabled }: Readonly<ButtonProps>) {
   return (
     <button className="btn" onClick={onClick} disabled={disabled}>
       {text}
     </button>
-  )
+  );
 }
 
-export default Button
+export default Button;

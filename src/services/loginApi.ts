@@ -1,18 +1,13 @@
-const BASE_URL = import.meta.env.VITE_BASE_URL 
+import api from './api';
 
-async function fetchLoginDetails (email:string, password:string) {
-   const response = await fetch(`${BASE_URL}/login`,{
-    method:'POST',
-     headers: {
-        'Content-Type': 'application/json'
-      },
-    body:JSON.stringify({
-        email,
-        password
-    })
-   })
-   
-return await response.json()
-   }
+interface Login {
+  email: string;
+  password: string;
+}
 
-export default fetchLoginDetails
+async function fetchLoginDetails(loginData: Login) {
+  const response = await api.post('/login', loginData);
+  return response.data;
+}
+
+export default fetchLoginDetails;

@@ -1,42 +1,50 @@
-.cart-heading{
-    text-align: center;
+.cart-heading {
+  text-align: center;
 }
 
-.carts{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+.carts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 0px 20px;
+  min-height: 400px;
 }
 
-.cart{
-    border: 2px solid black;
-    padding: 20px;
-    border-radius: 20px;
-    width: 300px;
+.cart {
+  border: 2px solid black;
+  padding: 20px;
+  border-radius: 20px;
+  width: 300px;
 }
 
-.cart p{
-    font-size: 18px;
+.cart p {
+  font-size: 18px;
 }
 
-.Edit-Delete-btn{
-    display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
-    background-color: rgb(225, 224, 224);
-    gap: 20px;
+.Edit-Delete-btn {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  background-color: rgb(225, 224, 224);
+  gap: 20px;
 }
 
-.palce-order-btn{
-    width: 400px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px black;
-    position: sticky;
-    bottom: 0px;
-    left: 0px;
-    background-color: white;
-    display: flex;
-    justify-content: flex-end;
-    margin-left: auto;
+.palce-order-btn {
+  width: 400px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px black;
+  position: sticky;
+  bottom: 0px;
+  left: 0px;
+  background-color: white;
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.empty-cart-div h3 {
+  min-height: 400px;
+  text-align: center;
+  font-size: 30px;
 }
