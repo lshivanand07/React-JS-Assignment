@@ -8,6 +8,8 @@ import withErrorHandling from '../../hoc/withErrorHandling';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCart } from '../../redux/slices/cartSlice';
 
 interface CartListProps {
   cartItems: any[];
@@ -22,7 +24,6 @@ const CartDataList = ({
   deleteCartItems,
   placeOrders,
 }: CartListProps) => {
-  
   const totalPrice = cartItems[0]?.reduce((total: number, item: any) => {
     return total + Number(item.price) * Number(item.quantity);
   }, 0);
@@ -88,16 +89,18 @@ const EnhancedCartList = withLoader(withErrorHandling(CartDataList));
 const CartDataContainer = () => {
   const navigate = useNavigate();
 
-  const [cartItems, setCartItems] = useState<any[]>([]);
   const [serverError, setServerError] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state: any) => state.cart.cartItem);
 
   const fetchCartItems = async () => {
     try {
       setLoading(true);
       const data = await fetchCartDetails();
-      setCartItems(data);
+      dispatch(setCart(data));
       setMessage(data.message);
       console.log(data);
     } catch (error) {

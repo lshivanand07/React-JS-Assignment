@@ -20,3 +20,11 @@ export async function createUserAddress(address: Address) {
   const response = await api.post('/post-user-address', address);
   return response.data;
 }
+
+export async function editAddress(address: Address, addressStatus: string) {
+  const response = await api.put(
+    `/edit-user-address/${addressStatus}`,
+    address
+  );
+  return response.data;
+}

@@ -6,17 +6,21 @@ import Footer from '../../components/Footer/Footer';
 import prsonImage from '../../assets/person.png';
 import notAddressFound from '../../assets/notAddressFound.png';
 import Button from '../../components/Buttons/Button';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchUserAddressById } from '../../services/addressApi';
 import withLoader from '../../hoc/withLoader';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import AddressContainer from '../Addresses/Address';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAddress } from '../../redux/slices/addressSlice';
+import { setUser } from '../../redux/slices/userSlice';
 
 interface MyProfileProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
   fetchUserInfo: () => void;
   fetchAddressInfo: () => void;
+  EditUserAddress: (value: string) => void;
   handleLogout: () => void;
   userData: any;
   addressData: any[];
@@ -27,6 +31,7 @@ function MyProfile({
   setActiveTab,
   fetchUserInfo,
   fetchAddressInfo,
+  EditUserAddress,
   handleLogout,
   userData,
   addressData,
@@ -61,7 +66,7 @@ function MyProfile({
                   </>
                 )}
 
-                {activeTab === 'address' && addressData && (
+                {activeTab === 'address' && addressData[0] && (
                   <>
                     <h1 className="dashboard-info-heading">My Address</h1>
                     <div className="user-addresses"></div>
@@ -77,6 +82,12 @@ function MyProfile({
                         <p>Street: {addressData?.street}</p>
                         <p>Landmark: {addressData?.landmark}</p>
                         <p>Pincode: {addressData?.pincode}</p>
+                        <Button
+                          text="Edit"
+                          onClick={() =>
+                            EditUserAddress(addressData?.user_address_status)
+                          }
+                        ></Button>
                       </div>
                     ))}
                     <Button
@@ -86,7 +97,7 @@ function MyProfile({
                   </>
                 )}
 
-                {activeTab === 'address' && !addressData && (
+                {activeTab === 'address' && !addressData[0] && (
                   <>
                     <div className="no-addresses-found">
                       <img src={notAddressFound} alt="person Img" />
@@ -100,7 +111,8 @@ function MyProfile({
                   </>
                 )}
 
-                {activeTab === 'addNewAddress' && (
+                {(activeTab === 'addNewAddress' ||
+                  activeTab === 'editAddress') && (
                   <>
                     <AddressContainer />
                   </>
@@ -119,23 +131,43 @@ const EnhancedMyProfile = withLoader(withErrorHandling(MyProfile));
 
 function MyProfileContainer() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [serverError, setServerError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
-  const [addressData, setAddressData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<
-    'profile' | 'address' | 'addNewAddress'
+    'profile' | 'address' | 'addNewAddress' | 'editAddress'
   >('profile');
+
+  const dispatch = useDispatch();
+  const addressData = useSelector((state: any) => state.address.addressItem);
+
+  const userData = useSelector((state: any) => state.user.userData);
 
   const fetchUserInfo = async () => {
     try {
       setLoading(true);
       const data = await fetchUserById();
       console.log(data[0][0]);
-      setUserData(data[0][0]);
+      dispatch(setUser(data[0][0]));
       setActiveTab('profile');
-      navigate('/profile');
+    } catch (error) {
+      setServerError(error as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAddressInfo = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchUserAddressById();
+      dispatch(setAddress(data[0]));
+      setActiveTab('address');
+
+      if (!data[0][0]) {
+        setActiveTab('address');
+      }
     } catch (error) {
       setServerError(error as Error);
     } finally {
@@ -144,28 +176,22 @@ function MyProfileContainer() {
   };
 
   useEffect(() => {
-    fetchUserInfo();
+    if (location.pathname === '/profile') {
+      fetchUserInfo();
+    } else {
+      fetchAddressInfo();
+    }
   }, []);
 
-  const fetchAddressInfo = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchUserAddressById();
-      console.log(data[0][0]);
-      setAddressData(data[0]);
-      setActiveTab('address');
-
-      if (!data[0][0]) {
-        setAddressData(null);
-        setActiveTab('address');
-      }
-      navigate('/address');
-    } catch (error) {
-      setServerError(error as Error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  function EditUserAddress(addressStatus: string) {
+    setActiveTab('editAddress');
+    navigate('/address', {
+      state: {
+        addressStatus: addressStatus,
+      },
+    });
+    console.log('hi');
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -180,6 +206,7 @@ function MyProfileContainer() {
       setActiveTab={setActiveTab}
       fetchUserInfo={fetchUserInfo}
       fetchAddressInfo={fetchAddressInfo}
+      EditUserAddress={EditUserAddress}
       handleLogout={handleLogout}
       userData={userData}
       addressData={addressData}

@@ -9,6 +9,10 @@ import { addCartItems } from '../../services/cartApi';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { setProduct } from '../../redux/slices/productSlice';
+import Navbar from '../../components/Navbar/Navbar';
+
 interface ProductDetails {
   productItems: any;
   message: string;
@@ -47,12 +51,13 @@ function OneProductDetails({
 
   return (
     <>
+      <Navbar />
       <div className="container">
         <h1 className="product-heading">Product Details</h1>
 
         <div className="product-veriants">
           <div className="product_img">
-            {' '}
+            {''}
             <img src={item?.image} />{' '}
           </div>
 
@@ -149,21 +154,23 @@ const ProductContainer = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const productId = Number(id);
-
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<Error | null>(null);
   const [message, setMessage] = useState('');
-  const [productItems, setProductItems] = useState<any>([]);
   const [stock, setStock] = useState<number>();
-
   const [stockForm, setStockForm] = useState(false);
+
+  const dispatch = useDispatch();
+  const productItems = useSelector((state: any) => state.product.productItem);
+
+  console.log(productItems);
 
   const productData = async () => {
     try {
       setLoading(true);
       const data = await fetchProductById(productId);
       console.log(data);
-      setProductItems(data);
+      dispatch(setProduct(data));
     } catch (error) {
       setServerError(error as Error);
     } finally {

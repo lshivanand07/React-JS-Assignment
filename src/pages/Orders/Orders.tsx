@@ -7,11 +7,14 @@ import withLoader from '../../hoc/withLoader';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import { checkoutOrder } from '../../services/checkoutApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { fetchUserAddressById } from '../../services/addressApi';
+import Button from '../../components/Buttons/Button';
+import { useDispatch, useSelector } from 'react-redux';
+import { setOrderItem } from '../../redux/slices/orderSlice';
 
 interface OrdersProps {
   orderData: any[];
   message: string;
+  navigate: any;
   handlePlaceOrder: () => void;
   handleCancelOrder: () => void;
   handleConfirmOrder: () => void;
@@ -29,6 +32,7 @@ interface OrdersProps {
 function Orders({
   orderData,
   message,
+  navigate,
   handleCancelOrder,
   handleConfirmOrder,
   checkoutData,
@@ -99,7 +103,7 @@ function Orders({
                 </select>
 
                 <div className="order-addresses">
-                  {addressData &&
+                  {addressData[0] ? (
                     addressData.map((data) => (
                       <div
                         className={`order-address-card ${checkoutData.address_status === data.user_address_status ? 'selected-address' : ''}`}
@@ -123,7 +127,13 @@ function Orders({
                         <p>{data.landmark}</p>
                         <p>{data.pincode}</p>
                       </div>
-                    ))}
+                    ))
+                  ) : (
+                    <Button
+                      text="Add order address"
+                      onClick={() => navigate('/address')}
+                    ></Button>
+                  )}
                 </div>
                 <div className="order-confirm-cancel-btn">
                   <button onClick={handleConfirmOrder}>Confirm</button>
@@ -156,7 +166,6 @@ function OrdersContainer() {
 
   const [serverError, setServerError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
-  const [orderData, setOrderData] = useState<any>(null);
   const [showPaymentMethodChoice, setShowPaymentMethodChoice] =
     useState(orderRequireDetails);
   const [checkoutData, setCheckoutData] = useState({
@@ -164,8 +173,9 @@ function OrdersContainer() {
     address_status: '',
   });
   const [message, setMessage] = useState('');
-  const [addressData, setAddressData] = useState<any>(null);
 
+  const dispatch = useDispatch();
+  const orderData = useSelector((state: any) => state.order.orderItem);
   const fetchUserOrders = async () => {
     try {
       setLoading(true);
@@ -173,7 +183,7 @@ function OrdersContainer() {
       const orderData = await userOrders();
       console.log(orderData);
       setMessage(orderData.message);
-      setOrderData(orderData[0]);
+      dispatch(setOrderItem(orderData[0]));
     } catch (error) {
       setServerError(error as Error);
     } finally {
@@ -187,31 +197,14 @@ function OrdersContainer() {
     }, []);
   }
 
-  const fetchAddressInfo = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchUserAddressById();
-      setAddressData(data[0]);
-
-      if (!data[0][0]) {
-        setAddressData(null);
-      }
-    } catch (error) {
-      setServerError(error as Error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (showPaymentMethodChoice) {
-      fetchAddressInfo();
-    }
-  }, [showPaymentMethodChoice]);
+  const addressData = useSelector((state: any) => state.address.addressItem);
 
   const handleConfirmOrder = async () => {
     try {
       setLoading(true);
+      if (!addressData[0]) {
+        navigate('/address');
+      }
       const data = await checkoutOrder(checkoutData);
       alert(data.message);
       setMessage(data.message);
@@ -230,6 +223,7 @@ function OrdersContainer() {
     <EnhancedOrders
       serverError={serverError}
       loading={loading}
+      navigate={navigate}
       orderData={orderData}
       message={message}
       handleCancelOrder={handleCancelOrder}

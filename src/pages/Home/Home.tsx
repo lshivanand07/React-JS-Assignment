@@ -2,23 +2,26 @@ import './Home.css';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { fetchProductDetails } from '../../services/ProductApi';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
+import { useDispatch, useSelector } from 'react-redux';
+import { setProduct } from '../../redux/slices/productSlice';
 
 interface HomeProps {
   products: any[];
+  navigate: any;
+  message: string;
 }
 
-function Home({ products }: HomeProps) {
-  const navigate = useNavigate();
+function Home({ products, navigate, message }: HomeProps) {
   return (
     <div className="home-page">
       <Navbar />
       <div className="container">
         <div className="products">
-          {products.map((product: any) => (
+          {products?.map((product) => (
             <div
               className="product-card"
               key={product.product_id}
@@ -36,6 +39,8 @@ function Home({ products }: HomeProps) {
             </div>
           ))}
         </div>
+
+        {!products && message && <h3>{message}</h3>}
       </div>
       <Footer />
     </div>
@@ -45,16 +50,21 @@ function Home({ products }: HomeProps) {
 const EnhancedHome = withLoader(withErrorHandling(Home));
 
 function HomeContainer() {
-  const [products, setProducts] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const productName = location.state?.product_name;
   const [serverError, setServerError] = useState<any>();
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const dispatch = useDispatch();
+  const products = useSelector((state: any) => state.product.productItem);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const data = await fetchProductDetails();
-      setProducts(data);
-      console.log(data);
+      dispatch(setProduct(data));
     } catch (error) {
       setServerError(error);
     } finally {
@@ -66,11 +76,27 @@ function HomeContainer() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (!productName) return;
+
+    const matchedProduct = products.find((element: any) =>
+      element.product_name.toLowerCase().includes(productName.toLowerCase())
+    );
+
+    if (!matchedProduct) {
+      setMessage('Product not found');
+      return;
+    }
+    navigate(`/products/${matchedProduct.product_id}`);
+  }, [productName, products]);
+
   return (
     <EnhancedHome
       products={products}
       serverError={serverError}
       loading={loading}
+      navigate={navigate}
+      message={message}
     />
   );
 }

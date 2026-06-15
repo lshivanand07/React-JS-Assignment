@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import './Signup.css';
 import Button from '../../components/Buttons/Button';
@@ -106,7 +107,7 @@ function SignupContainer() {
     password: '',
   });
   const [message, setMessage] = useState<string>('');
-  const [serverError, setServerError] = useState<boolean>(false);
+  const [serverError, setServerError] = useState<any>(false);
   const [loading, setLoading] = useState(false);
 
   const userRegistration = async (event: React.SyntheticEvent<HTMLElement>) => {

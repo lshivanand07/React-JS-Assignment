@@ -1,10 +1,10 @@
 import Button from '../../components/Buttons/Button';
 import { useState } from 'react';
-import { createUserAddress } from '../../services/addressApi';
+import { createUserAddress, editAddress } from '../../services/addressApi';
 import './Address.css';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface AddreessesProps {
   insertUserAddress: () => void;
@@ -148,10 +148,7 @@ const Addresses = ({
           <div className="model-overlay">
             <div className="modal-container">
               <h4>{message}</h4>
-              <Button
-                text="Cancel"
-                onClick={() => setShowPopup(false)}
-              ></Button>
+              <Button text="Ok" onClick={() => setShowPopup(false)}></Button>
             </div>
           </div>
         )}
@@ -164,6 +161,8 @@ const EnhancedAddresses = withLoader(withErrorHandling(Addresses));
 
 function AddressContainer() {
   const navigate = useNavigate();
+  const location = useLocation();
+  let userAddressStatus = location?.state?.addressStatus;
 
   const [loading, setLoading] = useState<boolean>(false);
   const [serverError, setServerError] = useState<Error | null>(null);
@@ -186,8 +185,14 @@ function AddressContainer() {
       console.log({
         address,
       });
-      const data = await createUserAddress(address);
-      setMessage(data.message);
+      if (!userAddressStatus) {
+        const createData = await createUserAddress(address);
+        setMessage(createData.message);
+      } else {
+        const editData = await editAddress(address, userAddressStatus);
+        console.log('editData ', editData.message);
+        setMessage(editData.message);
+      }
       setShowPopup(true);
       navigate('/address');
     } catch (error) {
@@ -198,6 +203,7 @@ function AddressContainer() {
   };
 
   function resetForm() {
+    location.state.addressStatus = '';
     setAddress({
       country: '',
       state: '',
@@ -221,6 +227,7 @@ function AddressContainer() {
       message={message}
       showPopup={showPopup}
       setShowPopup={setShowPopup}
+      userAddressStatus={userAddressStatus}
     />
   );
 }

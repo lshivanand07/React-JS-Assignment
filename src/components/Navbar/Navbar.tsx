@@ -19,6 +19,15 @@ function Navbar() {
     setIsLoggedIn(false);
     navigate('/login');
   };
+
+  function searchProduct(product_name: string) {
+    navigate('/', {
+      state: {
+        product_name: product_name,
+      },
+    });
+  }
+
   return (
     <header>
       <div className="container">
@@ -34,7 +43,12 @@ function Navbar() {
               onChange={(event) => setSearchMessage(event.target.value)}
               placeholder="Search for Products, Brands and More"
             />
-            <button className="search-btn">search</button>
+            <button
+              className="search-btn"
+              onClick={() => searchProduct(searchMessage)}
+            >
+              search
+            </button>
           </div>
           <Button text="cart" onClick={() => navigate('/cart')}></Button>
           {isLoggedIn ? (
