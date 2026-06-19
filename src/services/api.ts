@@ -5,10 +5,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = JSON.parse(localStorage.getItem('userToken') || '{}');
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (token?.token) {
+    config.headers.Authorization = `Bearer ${token?.token}`;
   }
 
   return config;

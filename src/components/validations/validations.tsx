@@ -4,39 +4,44 @@ interface validationSignUp {
   role: string;
   password: string;
 }
-const validateSignup = (signUpData: validationSignUp) => {
+
+interface ValidationErrors {
+  user_name?: string;
+  email?: string;
+  role?: string;
+  password?: string;
+}
+
+const validateSignup = (signUpData: validationSignUp): ValidationErrors => {
+  const errors: ValidationErrors = {};
+
   if (!signUpData.user_name.trim()) {
-    return 'Name is required';
+    errors.user_name = 'Name is required';
   }
 
-  const emailPattern = /([a-z]+)([@]{1})([a-z]+)([.]{1})([a-z]+)/;
+  const emailPattern = /([a-z]+)([0-9]*)([@]{1})([a-z]+)([.]{1})([a-z]+)/;
 
   if (signUpData.email === '') {
-    return 'Email field is mandatory';
+    errors.email = 'Email field is mandatory';
   } else if (!emailPattern.test(signUpData.email)) {
-    return 'please enter valid email';
+    errors.email = 'please enter valid email';
   }
 
   if (!signUpData.role) {
-    return 'please select user type';
+    errors.role = 'please select user type';
   }
 
-  const passwordPattern = /([A-Z]+)([a-z]+)([@$&]?)([0-9]+)/;
+  const passwordPattern = /([A-Z]+)([a-z0-9]+)([@$&]?)([a-z0-9]+)/;
   if (signUpData.password === '') {
-    return 'Password field is mandatory*';
+    errors.password = 'Password field is mandatory*';
   } else if (signUpData.password.length < 8) {
-    return 'Password must be at least 8 characters long.';
+    errors.password = 'Password must be at least 8 characters long.';
   } else if (!passwordPattern.test(signUpData.password)) {
-    return 'Must contain at least one uppercase letter,  Must contain at least one lowercase letter,  Must contain at least one digit';
+    errors.password =
+      'Must contain at least one uppercase letter,  Must contain at least one lowercase letter,  Must contain at least one digit';
   }
 
-  if (
-    emailPattern.test(signUpData.email) &&
-    passwordPattern.test(signUpData.password) &&
-    signUpData.password.length >= 8
-  ) {
-    console.log('hi');
-  }
+  return errors;
 };
 
 export default validateSignup;

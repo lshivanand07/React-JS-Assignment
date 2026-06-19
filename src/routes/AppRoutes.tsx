@@ -8,23 +8,41 @@ import Orders from '../pages/Orders/Orders';
 import ProtectedRoutes from './ProtectedRoutes';
 import CartContainer from '../pages/Cart/Cart';
 import AddressContainer from '../pages/Addresses/Address';
-import Seller from '../pages/Seller/Seller';
+import SellerContainer from '../pages/Seller/Seller';
+import SellProductContainer from '../pages/SellNewProduct/SellNewProduct';
+import AdminContainer from '../pages/Admin/Admin';
 import PageNotFound from '../pages/PageNotFound/PageNotFound';
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/products" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignupContainer />} />
-      <Route path="/seller-account" element={<Seller />} />
-      <Route element={<ProtectedRoutes />}>
+      <Route path="/profile" element={<MyProfileContainer />} />
+      <Route path="/address" element={<MyProfileContainer />} />
+      <Route path="/add-user-address" element={<AddressContainer />} />
+      <Route path="/seller-account" element={<SellerContainer />} />
+      <Route element={<ProtectedRoutes allowedRoles={['customer']} />}>
         <Route path="/products/:id" element={<ProductContainer />} />
-        <Route path="/cart" element={<CartContainer />} />=
+        <Route path="/cart" element={<CartContainer />} />
         <Route path="/orders" element={<Orders />} />
-        <Route path="/profile" element={<MyProfileContainer />} />
-        <Route path="/address" element={<MyProfileContainer />} />
-        <Route path="/add-user-address" element={<AddressContainer />} />
+      </Route>
+      <Route element={<ProtectedRoutes allowedRoles={['seller']} />}>
+        <Route
+          path="/seller-account/sell-new-product"
+          element={<SellProductContainer />}
+        />
+      </Route>
+      <Route element={<ProtectedRoutes allowedRoles={['admin']} />}>
+        <Route path="/admin" element={<AdminContainer />} />
+        <Route path="/admin/dashboard" element={<AdminContainer />} />
+        <Route path="/admin/users" element={<AdminContainer />} />
+        <Route path="/admin/customer" element={<AdminContainer />} />
+        <Route path="/admin/seller" element={<AdminContainer />} />
+        <Route path="/admin/orders" element={<AdminContainer />} />
+        <Route path="/admin/products" element={<AdminContainer />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

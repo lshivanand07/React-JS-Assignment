@@ -1,4 +1,4 @@
-.dashboard {
+.profile-dashboard {
   display: flex;
   gap: 20px;
   margin: 20px;
@@ -42,4 +42,38 @@
 
 .no-addresses-found {
   text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+  .profile-dashboard {
+    flex-direction: column;
+    margin: 10px;
+    gap: 15px;
+  }
+
+  .dashboard-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    min-height: auto;
+  }
+
+  .dashboard-info {
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .person-name-img {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .address {
+    padding: 15px;
+  }
+
+  .dashboard-info-heading {
+    font-size: 22px;
+  }
 }

@@ -49,37 +49,50 @@ function Login({
     !loading &&
     !serverError &&
     !authenticated && (
-      <form className="login-div">
-        <h1>Login</h1>
-        <label htmlFor="email">Email *: </label>
-        <input
-          type="text"
-          id="email"
-          name="email"
-          value={loginData.email}
-          placeholder="Enter Email"
-          onChange={handleChangeEvent}
-        />
-        {errors.email && !errors.password && (
-          <p className="error">{errors.email}</p>
-        )}
-        <label htmlFor="password">Password *: </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={loginData.password}
-          placeholder="Enter Password"
-          onChange={handleChangeEvent}
-        />
-        {!errors.email && errors.password && (
-          <p className="error">{errors.password}</p>
-        )}
-        <button onClick={userLogin} disabled={loading}>
-          Login
-        </button>
-        {message && <p className="error">{message}</p>}
-      </form>
+      <div className="login-section">
+        <div className="container">
+          <div className="login-card">
+            <form className="login-div">
+              <h1>Login</h1>
+              <p>
+                Do not have an account? <a href="/signup">Sign-Up</a>
+              </p>
+
+              <label htmlFor="email">Email</label>
+
+              <input
+                type="text"
+                id="email"
+                name="email"
+                value={loginData.email}
+                placeholder="Enter Email"
+                onChange={handleChangeEvent}
+              />
+
+              {errors.email && <p className="error">{errors.email}</p>}
+
+              <label htmlFor="password">Password</label>
+
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={loginData.password}
+                placeholder="Enter Password"
+                onChange={handleChangeEvent}
+              />
+
+              {errors.password && <p className="error">{errors.password}</p>}
+
+              <button onClick={userLogin} disabled={loading}>
+                Log in
+              </button>
+
+              {message && <p className="error">{message}</p>}
+            </form>
+          </div>
+        </div>
+      </div>
     )
   );
 }
@@ -104,7 +117,10 @@ function LoginContainer() {
       setLoading(true);
       setServerError(false);
       if (!loginData.email && !loginData.password) {
-        setMessage('Email and Password Fields are required');
+        setErrors({
+          email: 'Email fields required',
+          password: 'Password fields required',
+        });
         return;
       }
       if (!loginData.email) {
@@ -119,8 +135,25 @@ function LoginContainer() {
       const data = await fetchLoginDetails(loginData);
       if (data.token) {
         setAuthenticated(true);
-        localStorage.setItem('token', data.token);
-        navigate('/');
+        const userToken = {
+          token: data.token,
+          role: data.user_role,
+        };
+        localStorage.setItem('userToken', JSON.stringify(userToken));
+        console.log(localStorage.getItem('userToken'));
+        if (userToken.role === 'customer') {
+          console.log('home');
+          return navigate('/');
+        }
+        if (userToken.role === 'seller') {
+          console.log('seller');
+          return navigate('/seller-account');
+        }
+
+        if (userToken.role === 'admin') {
+          console.log('admin');
+          return navigate('/admin');
+        }
       } else {
         setMessage(data.message);
       }

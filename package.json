@@ -16,9 +16,11 @@
     "@vitest/coverage-v8": "^4.1.7",
     "axios": "^1.17.0",
     "react": "^19.2.6",
+    "react-data-table-component": "^8.4.0",
     "react-dom": "^19.2.6",
     "react-redux": "^9.3.0",
-    "react-router-dom": "^7.15.1"
+    "react-router-dom": "^7.15.1",
+    "styled-components": "^6.4.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -21,23 +21,27 @@ function Home({ products, navigate, message }: HomeProps) {
       <Navbar />
       <div className="container">
         <div className="products">
-          {products?.map((product) => (
-            <div
-              className="product-card"
-              key={product.product_id}
-              onClick={() => navigate(`/products/${product.product_id}`)}
-            >
-              <div className="product_img">
-                <img src={product.image_url} />
+          {Array.isArray(products) &&
+            products?.map((product) => (
+              <div
+                className="product-card"
+                key={product.product_id}
+                onClick={() => navigate(`/products/${product.product_id}`)}
+              >
+                <div className="product_img">
+                  <img src={product.image_url} />
+                </div>
+                <h3>{product.product_name}</h3>
+                <p className="uppercase">{product.description}</p>
+                <p>
+                  Discount percentage:{' '}
+                  {product.discount_percentage
+                    ? product.discount_percentage
+                    : 0}
+                  %
+                </p>
               </div>
-              <h3>{product.product_name}</h3>
-              <p className="uppercase">{product.description}</p>
-              <p>
-                Discount percentage:{' '}
-                {product.discount_percentage ? product.discount_percentage : 0}%
-              </p>
-            </div>
-          ))}
+            ))}
         </div>
 
         {!products && message && <h3>{message}</h3>}

@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface SignupProps {
   userRegistration: () => void;
-  message: string;
+  message: any;
   signUpData: {
     user_name: string;
     email: string;
@@ -18,6 +18,8 @@ interface SignupProps {
     password: string;
   };
   setSignUpData: (value: any) => void;
+  showPopup: boolean;
+  popupFunction: () => void;
 }
 
 function Signup({
@@ -25,6 +27,8 @@ function Signup({
   message,
   signUpData,
   setSignUpData,
+  showPopup,
+  popupFunction,
 }: SignupProps) {
   const handleChangeEvent = (
     e: React.ChangeEvent<
@@ -40,57 +44,74 @@ function Signup({
   };
 
   return (
-    <div className="container">
-      <form className="signup-div">
-        <h1 className="sign-up-heading">Sign Up</h1>
-        <label htmlFor="user_name">Name*: </label>
-        <input
-          type="text"
-          id="user_name"
-          name="user_name"
-          value={signUpData.user_name}
-          onChange={handleChangeEvent}
-        />
-        <label htmlFor="user_email">Email*: </label>
-        <input
-          type="email"
-          id="user_email"
-          name="email"
-          value={signUpData.email}
-          onChange={handleChangeEvent}
-        />
-        <p>User Role</p>
-        <div className="user-type">
+    <div className="signup">
+      <div className="container">
+        <form className="signup-div">
+          <h1 className="sign-up-heading">Sign Up</h1>
+          <p>
+            Already have an account? <a href="/login">Login</a>
+          </p>
+          <label htmlFor="user_name">Name*: </label>
           <input
-            id="Customer"
-            type="radio"
-            name="role"
-            value="Customer"
-            checked={signUpData.role === 'Customer'}
+            type="text"
+            id="user_name"
+            name="user_name"
+            value={signUpData.user_name}
             onChange={handleChangeEvent}
           />
-          <label htmlFor="Customer">Custome</label>
+          <p className="error">{message?.user_name}</p>
+          <label htmlFor="user_email">Email*: </label>
           <input
-            id="Seller"
-            type="radio"
-            name="role"
-            value="Seller"
-            checked={signUpData.role === 'Seller'}
+            type="email"
+            id="user_email"
+            name="email"
+            value={signUpData.email}
             onChange={handleChangeEvent}
           />
-          <label htmlFor="Seller">Seller</label>
-        </div>
-        <label htmlFor="user_password">password*: </label>
-        <input
-          type="text"
-          id="user_password"
-          name="password"
-          value={signUpData.password}
-          onChange={handleChangeEvent}
-        />
-        <Button text="Sign Up" onClick={userRegistration}></Button>
-        <p className="error">{message}</p>
-      </form>
+          <p className="error">{message?.email}</p>
+          <p>User Role</p>
+          <div className="user-type">
+            <input
+              id="Customer"
+              type="radio"
+              name="role"
+              value="Customer"
+              checked={signUpData.role === 'Customer'}
+              onChange={handleChangeEvent}
+            />
+            <label htmlFor="Customer">Custome</label>
+            <input
+              id="Seller"
+              type="radio"
+              name="role"
+              value="Seller"
+              checked={signUpData.role === 'Seller'}
+              onChange={handleChangeEvent}
+            />
+            <label htmlFor="Seller">Seller</label>
+          </div>
+          <p className="error">{message?.role}</p>
+          <label htmlFor="user_password">password*: </label>
+          <input
+            type="text"
+            id="user_password"
+            name="password"
+            value={signUpData.password}
+            onChange={handleChangeEvent}
+          />
+          <p className="error">{message?.password}</p>
+          <Button text="Sign Up" onClick={userRegistration}></Button>
+        </form>
+
+        {showPopup && (
+          <div className="model-overlay">
+            <div className="modal-container">
+              <h4>{message?.message}</h4>
+              <Button text="Ok" onClick={popupFunction}></Button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -106,29 +127,36 @@ function SignupContainer() {
     role: '',
     password: '',
   });
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<any>({});
   const [serverError, setServerError] = useState<any>(false);
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   const userRegistration = async (event: React.SyntheticEvent<HTMLElement>) => {
     try {
       event.preventDefault();
       setLoading(true);
       const error = validateSignup(signUpData);
-      console.log(error);
-      if (error) {
+
+      if (Object.keys(error).length > 0) {
         setMessage(error);
         return;
       }
       const data = await CreateUser(signUpData);
-      alert(data.message);
-      navigate('/');
+      setMessage(data);
+      setShowPopup(true);
     } catch (error) {
       setServerError(true);
     } finally {
       setLoading(false);
     }
   };
+
+  function popupFunction() {
+    setShowPopup(false);
+    navigate('/');
+    return;
+  }
 
   return (
     <EnhancedSignup
@@ -138,6 +166,8 @@ function SignupContainer() {
       message={message}
       signUpData={signUpData}
       setSignUpData={setSignUpData}
+      showPopup={showPopup}
+      popupFunction={popupFunction}
     />
   );
 }

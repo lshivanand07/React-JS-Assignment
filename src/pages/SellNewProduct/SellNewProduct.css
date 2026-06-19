@@ -1,0 +1,25 @@
+.add-product-container input,
+.add-product-container textarea {
+  width: 30%;
+  padding: 10px;
+}
+
+.product-heading {
+  text-align: center;
+}
+
+.product,
+.discount,
+.product-variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+}

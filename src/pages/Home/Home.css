@@ -34,3 +34,27 @@
 .product-card p {
   margin: 10px;
 }
+
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  .product-card {
+    width: 45%;
+    max-width: 350px;
+    margin: 0;
+  }
+
+  .product_img {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .product-card h3 {
+    font-size: 18px;
+  }
+
+  .product-card p {
+    font-size: 14px;
+  }
+}

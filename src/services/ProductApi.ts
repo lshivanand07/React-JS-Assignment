@@ -9,3 +9,8 @@ export async function fetchProductById(productId: number) {
   const response = await api.get(`/get-one-products/${productId}`);
   return response.data;
 }
+
+export async function createProduct(productData: any) {
+  const response = await api.post('/post-product-info', productData);
+  return response.data;
+}

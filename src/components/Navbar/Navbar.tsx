@@ -10,12 +10,12 @@ function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    const token = JSON.parse(localStorage.getItem('userToken') || '{}');
+    setIsLoggedIn(!!token.token);
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('userToken');
     setIsLoggedIn(false);
     navigate('/login');
   };

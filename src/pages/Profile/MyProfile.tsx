@@ -14,6 +14,7 @@ import AddressContainer from '../Addresses/Address';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAddress } from '../../redux/slices/addressSlice';
 import { setUser } from '../../redux/slices/userSlice';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 
 interface MyProfileProps {
   activeTab: string;
@@ -42,7 +43,7 @@ function MyProfile({
         <div>
           <Navbar />
           <div className="container">
-            <div className="dashboard">
+            <div className="profile-dashboard">
               <div className="dashboard-buttons">
                 <div className="person-name-img">
                   <img src={prsonImage} alt="person Img" />
@@ -54,6 +55,7 @@ function MyProfile({
               </div>
 
               <div className="dashboard-info">
+                <Breadcrumbs />
                 {activeTab === 'profile' && userData && (
                   <>
                     <h1 className="dashboard-info-heading">My Profile</h1>
@@ -151,6 +153,7 @@ function MyProfileContainer() {
       console.log(data[0][0]);
       dispatch(setUser(data[0][0]));
       setActiveTab('profile');
+      navigate('/profile');
     } catch (error) {
       setServerError(error as Error);
     } finally {
@@ -164,6 +167,7 @@ function MyProfileContainer() {
       const data = await fetchUserAddressById();
       dispatch(setAddress(data[0]));
       setActiveTab('address');
+      navigate('/address');
 
       if (!data[0][0]) {
         setActiveTab('address');

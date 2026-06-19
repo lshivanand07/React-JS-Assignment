@@ -43,3 +43,46 @@
   gap: 10px;
   padding: 10px;
 }
+
+@media screen and (max-width: 768px) {
+  .product-veriants {
+    width: 95%;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .product_img {
+    max-width: 150px;
+  }
+
+  .variants {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .variants select {
+    width: 100%;
+    max-width: 250px;
+    margin: 5px 0;
+  }
+
+  .add-items-in-cart-form {
+    width: 100%;
+    max-width: 280px;
+    box-sizing: border-box;
+  }
+
+  .confirm-Cancel-btn {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .confirm-Cancel-btn button {
+    width: 100%;
+  }
+
+  .product-heading {
+    font-size: 24px;
+  }
+}

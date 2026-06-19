@@ -21,11 +21,11 @@ interface deleteCartItemByproductID {
   variantID: number;
 }
 
-export async function deleteCartItem(payload: deleteCartItemByproductID) {
-  console.log('payload', payload);
+export async function deleteCartItem(selectedItem: deleteCartItemByproductID) {
+  console.log('payload', selectedItem);
 
   const response = await api.delete(
-    `/delete-cart-product/${payload.productID}/${payload.variantID}`
+    `/delete-cart-product/${selectedItem.productID}/${selectedItem.variantID}`
   );
   return response.data;
 }

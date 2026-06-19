@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '../../components/Buttons/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOrderItem } from '../../redux/slices/orderSlice';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 
 interface OrdersProps {
   orderData: any[];
@@ -47,6 +48,7 @@ function Orders({
       <Navbar />
       <div className="container">
         <div className="orders">
+          <Breadcrumbs />
           <h1 className="orders-heading">Orders</h1>
           {!showPaymentMethodChoice && (
             <div className="order-items">
@@ -191,11 +193,11 @@ function OrdersContainer() {
     }
   };
 
-  if (!orderRequireDetails) {
-    useEffect(() => {
+  useEffect(() => {
+    if (!orderRequireDetails) {
       fetchUserOrders();
-    }, []);
-  }
+    }
+  }, []);
 
   const addressData = useSelector((state: any) => state.address.addressItem);
 
