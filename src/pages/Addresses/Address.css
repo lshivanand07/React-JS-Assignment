@@ -30,10 +30,11 @@ select {
 .address-radio-Btn {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
 }
 
-.address-save-cancel-btn {
+.save-cancel-btn {
   margin: 10px auto;
   text-align: center;
   display: flex;
@@ -56,4 +57,19 @@ select {
   background-color: white;
   border-radius: 20px;
   text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+  .address-input input,
+  .address-input select {
+    padding: 5px;
+    min-width: 200px;
+  }
+
+  #HOME,
+  #work {
+    min-width: 0px;
+    gap: 0px;
+    margin: 0px;
+  }
 }

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import './MyProfile.css';
-import { fetchUserById } from '../../services/userApi';
+import { editUser, fetchUserById } from '../../services/userApi';
 import { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
@@ -15,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setAddress } from '../../redux/slices/addressSlice';
 import { setUser } from '../../redux/slices/userSlice';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import MobileMenu from '../../components/MobileMenu/MobileMenu';
 
 interface MyProfileProps {
   activeTab: string;
@@ -22,9 +24,21 @@ interface MyProfileProps {
   fetchUserInfo: () => void;
   fetchAddressInfo: () => void;
   EditUserAddress: (value: string) => void;
+  editedProfileData: {
+    user_name: string;
+    dob: string;
+    phone: string;
+    age: number;
+    gender: string;
+  };
+  setEditedProfileData: (value: any) => void;
   handleLogout: () => void;
   userData: any;
   addressData: any[];
+  showPopup: boolean;
+  setShowPopup: (value: boolean) => void;
+  editProfile: () => void;
+  message: string;
 }
 
 function MyProfile({
@@ -33,10 +47,25 @@ function MyProfile({
   fetchUserInfo,
   fetchAddressInfo,
   EditUserAddress,
+  setEditedProfileData,
+  editedProfileData,
   handleLogout,
   userData,
   addressData,
+  showPopup,
+  setShowPopup,
+  editProfile,
+  message,
 }: MyProfileProps) {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setEditedProfileData((prev: any) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <>
       <>
@@ -65,6 +94,80 @@ function MyProfile({
                     <p>Gender: {userData?.gender}</p>
                     <p>phone: {userData?.phone}</p>
                     <p>role: {userData?.role}</p>
+                    <div className="edit-button">
+                      <Button
+                        text="Edit"
+                        onClick={() => setActiveTab('editProfile')}
+                      ></Button>
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'editProfile' && (
+                  <>
+                    <h3>Manage Profile</h3>
+                    <div className="edit-profile">
+                      <h4 style={{ color: 'blue' }}>Edit Profile</h4>
+                      <form className="profile-input">
+                        <input
+                          type="text"
+                          placeholder={userData?.user_name}
+                          name="user_name"
+                          value={editedProfileData.user_name}
+                          onChange={handleChange}
+                        />
+                        <input
+                          type="date"
+                          placeholder="Date of Birth"
+                          name="dob"
+                          value={editedProfileData.dob}
+                          onChange={handleChange}
+                        />
+                        <input
+                          type="tel"
+                          placeholder="EX: 918618581627"
+                          minLength={10}
+                          name="phone"
+                          value={editedProfileData.phone}
+                          onChange={handleChange}
+                        />
+                        <input
+                          type="number"
+                          placeholder="Enter your age"
+                          name="age"
+                          value={editedProfileData.age}
+                          onChange={handleChange}
+                        />
+
+                        <div>
+                          Gender
+                          <div className="profile-radio-Btn">
+                            <input
+                              type="radio"
+                              id="Male"
+                              name="gender"
+                              value="Male"
+                              checked={editedProfileData.gender === 'Male'}
+                              onChange={handleChange}
+                            />
+                            <label htmlFor="Male">Male</label>
+                            <input
+                              type="radio"
+                              id="Female"
+                              name="gender"
+                              value="Female"
+                              checked={editedProfileData.gender === 'Female'}
+                              onChange={handleChange}
+                            />
+                            <label htmlFor="Female">Female</label>
+                          </div>
+                        </div>
+                      </form>
+
+                      <div className="save-cancel-btn">
+                        <Button text="Save" onClick={editProfile}></Button>
+                      </div>
+                    </div>
                   </>
                 )}
 
@@ -84,12 +187,14 @@ function MyProfile({
                         <p>Street: {addressData?.street}</p>
                         <p>Landmark: {addressData?.landmark}</p>
                         <p>Pincode: {addressData?.pincode}</p>
-                        <Button
-                          text="Edit"
-                          onClick={() =>
-                            EditUserAddress(addressData?.user_address_status)
-                          }
-                        ></Button>
+                        <div className="edit-button">
+                          <Button
+                            text="Edit"
+                            onClick={() =>
+                              EditUserAddress(addressData?.user_address_status)
+                            }
+                          ></Button>
+                        </div>
                       </div>
                     ))}
                     <Button
@@ -119,9 +224,22 @@ function MyProfile({
                     <AddressContainer />
                   </>
                 )}
+
+                {showPopup && (
+                  <div className="model-overlay">
+                    <div className="modal-container">
+                      <h4>{message}</h4>
+                      <Button
+                        text="Ok"
+                        onClick={() => setShowPopup(false)}
+                      ></Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
+          <MobileMenu />
           <Footer />
         </div>
       </>
@@ -135,31 +253,60 @@ function MyProfileContainer() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [serverError, setServerError] = useState<Error | null>(null);
+  const [serverError, setServerError] = useState<any>();
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState('');
   const [activeTab, setActiveTab] = useState<
-    'profile' | 'address' | 'addNewAddress' | 'editAddress'
+    'profile' | 'editProfile' | 'address' | 'addNewAddress' | 'editAddress'
   >('profile');
 
   const dispatch = useDispatch();
   const addressData = useSelector((state: any) => state.address.addressItem);
 
   const userData = useSelector((state: any) => state.user.userData);
+  const [editedProfileData, setEditedProfileData] = useState<any>({});
+
+  useEffect(() => {
+    if (userData?.User_id) {
+      setEditedProfileData({
+        user_name: userData.user_name,
+        dob: '',
+        phone: userData.phone,
+        gender: userData.gender,
+        age: userData.age,
+      });
+    }
+  }, [userData]);
 
   const fetchUserInfo = async () => {
     try {
       setLoading(true);
       const data = await fetchUserById();
-      console.log(data[0][0]);
       dispatch(setUser(data[0][0]));
       setActiveTab('profile');
       navigate('/profile');
     } catch (error) {
-      setServerError(error as Error);
+      setServerError(error);
     } finally {
       setLoading(false);
     }
   };
+
+  async function editProfile() {
+    try {
+      setLoading(true);
+      const data = await editUser(editedProfileData);
+      console.log(data);
+      setMessage(data.message);
+      setShowPopup(true);
+    } catch (error: any) {
+      alert(JSON.stringify(error.response?.data?.message));
+      setServerError(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const fetchAddressInfo = async () => {
     try {
@@ -173,7 +320,7 @@ function MyProfileContainer() {
         setActiveTab('address');
       }
     } catch (error) {
-      setServerError(error as Error);
+      setServerError(error);
     } finally {
       setLoading(false);
     }
@@ -198,7 +345,7 @@ function MyProfileContainer() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('userToken');
     navigate('/login');
   };
 
@@ -209,11 +356,17 @@ function MyProfileContainer() {
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       fetchUserInfo={fetchUserInfo}
+      setEditedProfileData={setEditedProfileData}
+      editedProfileData={editedProfileData}
       fetchAddressInfo={fetchAddressInfo}
       EditUserAddress={EditUserAddress}
       handleLogout={handleLogout}
       userData={userData}
       addressData={addressData}
+      setShowPopup={setShowPopup}
+      showPopup={showPopup}
+      editProfile={editProfile}
+      message={message}
     />
   );
 }

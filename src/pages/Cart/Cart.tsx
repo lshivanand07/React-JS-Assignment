@@ -41,9 +41,9 @@ const CartDataList = ({
     <>
       <Navbar />
       <div className="container">
+        <Breadcrumbs />
         {!message && (
           <>
-            <Breadcrumbs />
             <h1 className="cart-heading">My Cart</h1>
             <div className="carts">
               {cartItems[0]?.map((item: any) => (
@@ -77,6 +77,7 @@ const CartDataList = ({
               ))}
             </div>
             <div className="palce-order-btn">
+              <h2 className="cart-totalPrice">₹ {totalPrice}</h2>
               <Button
                 text="PLACE ORDER"
                 onClick={() => placeOrders(totalPrice)}

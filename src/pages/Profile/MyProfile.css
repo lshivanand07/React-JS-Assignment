@@ -40,22 +40,45 @@
   margin-bottom: 10px;
 }
 
+.edit-button {
+  display: flex;
+  justify-content: end;
+}
+
 .no-addresses-found {
   text-align: center;
+}
+
+.edit-profile {
+  border: 0.2px solid black;
+  background-color: #effcec;
+  padding: 10px;
+}
+
+.profile-input {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.profile-input input {
+  width: 40%;
+  padding: 10px;
 }
 
 @media screen and (max-width: 768px) {
   .profile-dashboard {
     flex-direction: column;
-    margin: 10px;
+    margin: 0px;
     gap: 15px;
   }
 
   .dashboard-buttons {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
     min-height: auto;
+    gap: 5px;
+    padding: 5px;
   }
 
   .dashboard-info {
@@ -67,6 +90,16 @@
   .person-name-img {
     justify-content: center;
     align-items: center;
+  }
+
+  .profile-input input {
+    min-width: 200px;
+    padding: 5px;
+  }
+
+  #Male,
+  #Female {
+    min-width: 10px;
   }
 
   .address {

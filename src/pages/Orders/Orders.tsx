@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import './Orders.css';
 import { useEffect, useState } from 'react';
 import Footer from '../../components/Footer/Footer';
@@ -16,6 +17,8 @@ interface OrdersProps {
   orderData: any[];
   message: string;
   navigate: any;
+  popupModelFunction: () => void;
+  showPopup: boolean;
   handlePlaceOrder: () => void;
   handleCancelOrder: () => void;
   handleConfirmOrder: () => void;
@@ -34,6 +37,8 @@ function Orders({
   orderData,
   message,
   navigate,
+  popupModelFunction,
+  showPopup,
   handleCancelOrder,
   handleConfirmOrder,
   checkoutData,
@@ -43,6 +48,7 @@ function Orders({
 
   orderTotalAmount,
 }: OrdersProps) {
+  console.log('message', message);
   return (
     <>
       <Navbar />
@@ -151,6 +157,15 @@ function Orders({
               <h3>{message}</h3>
             </div>
           )}
+
+          {showPopup && (
+            <div className="model-overlay">
+              <div className="modal-container">
+                <h4>{message}</h4>
+                <Button text="Ok" onClick={popupModelFunction}></Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <Footer />
@@ -166,7 +181,8 @@ function OrdersContainer() {
   const orderTotalAmount = location.state?.total_price || 0;
   const orderRequireDetails = location.state?.showPaymentMethodChoice || false;
 
-  const [serverError, setServerError] = useState<Error | null>(null);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [serverError, setServerError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [showPaymentMethodChoice, setShowPaymentMethodChoice] =
     useState(orderRequireDetails);
@@ -208,10 +224,11 @@ function OrdersContainer() {
         navigate('/address');
       }
       const data = await checkoutOrder(checkoutData);
-      alert(data.message);
       setMessage(data.message);
-      fetchUserOrders();
+      console.log('ss', data.message);
+      setShowPopup(true);
     } catch (error) {
+      setServerError(error);
     } finally {
       setLoading(false);
     }
@@ -221,6 +238,11 @@ function OrdersContainer() {
     navigate('/cart');
   };
 
+  const popupModelFunction = () => {
+    setShowPopup(false);
+    fetchUserOrders();
+  };
+
   return (
     <EnhancedOrders
       serverError={serverError}
@@ -228,6 +250,8 @@ function OrdersContainer() {
       navigate={navigate}
       orderData={orderData}
       message={message}
+      popupModelFunction={popupModelFunction}
+      showPopup={showPopup}
       handleCancelOrder={handleCancelOrder}
       handleConfirmOrder={handleConfirmOrder}
       setCheckoutData={setCheckoutData}

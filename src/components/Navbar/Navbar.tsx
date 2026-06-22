@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
 import { useState } from 'react';
 import { useEffect } from 'react';
+
 function Navbar() {
   const [searchMessage, setSearchMessage] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -40,7 +41,10 @@ function Navbar() {
               className="search-bar"
               type="text"
               value={searchMessage}
-              onChange={(event) => setSearchMessage(event.target.value)}
+              onChange={(event) => {
+                setSearchMessage(event.target.value);
+                searchProduct(searchMessage);
+              }}
               placeholder="Search for Products, Brands and More"
             />
             <button
@@ -50,18 +54,21 @@ function Navbar() {
               search
             </button>
           </div>
-          <Button text="cart" onClick={() => navigate('/cart')}></Button>
+          <button className="cart-button" onClick={() => navigate('/cart')}>
+            cart
+          </button>
           {isLoggedIn ? (
             <>
               <div className="account-menu">
                 <button className="account-btn">My Account ▼ </button>
                 <div className="dropdown">
                   <p onClick={() => navigate('/orders')}>Orders</p>
-                  <p onClick={() => navigate('/coupons')}>Coupons</p>
                   <p onClick={() => navigate('/profile')}>Profile</p>
                 </div>
               </div>
-              <button onClick={handleLogout}>Logout</button>
+              <button className="logout-button" onClick={handleLogout}>
+                Logout
+              </button>
             </>
           ) : (
             <>
@@ -74,8 +81,8 @@ function Navbar() {
             <Button text="More ▼"></Button>
             <div className="dropdown">
               <p onClick={() => navigate('/seller-account')}>Become a Seller</p>
-              <p onClick={() => navigate('/coupons')}>Notification Settings</p>
-              <p onClick={() => navigate('/profile')}>24*7 Customer Care</p>
+              <p onClick={() => navigate('')}>Notification Settings</p>
+              <p onClick={() => navigate('')}>24*7 Customer Care</p>
             </div>
           </div>
         </div>

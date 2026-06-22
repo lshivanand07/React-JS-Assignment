@@ -11,6 +11,29 @@
   background-size: cover;
 }
 
+.go-to-home {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  padding: 8px;
+  background-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.go-to-home img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.go-to-home:hover {
+  transform: scale(1.1);
+  transition: 0.3s;
+}
+
 .login-div {
   backdrop-filter: blur(5px);
   padding: 50px;
@@ -60,5 +83,10 @@
 @media (max-width: 768px) {
   .login-div {
     padding: 25px;
+  }
+
+  .go-to-home {
+    width: 30px;
+    height: 30px;
   }
 }

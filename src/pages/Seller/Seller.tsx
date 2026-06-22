@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import './Seller.css';
 import sellerHub from '../../assets/sellerHub.png';
 import Button from '../../components/Buttons/Button';

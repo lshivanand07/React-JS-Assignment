@@ -139,7 +139,7 @@ const Addresses = ({
             </div>
           </div>
         </form>
-        <div className="address-save-cancel-btn">
+        <div className="save-cancel-btn">
           <Button text="Save" onClick={insertUserAddress}></Button>
           <Button text="Cancel" onClick={resetForm}></Button>
         </div>

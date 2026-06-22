@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import fetchLoginDetails from '../../services/loginApi';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
+import homeImage from '../../assets/home.png';
 
 interface LoginProps {
   loading: boolean;
@@ -45,6 +47,8 @@ function Login({
     }));
   };
 
+  const navigate = useNavigate();
+
   return (
     !loading &&
     !serverError &&
@@ -52,6 +56,9 @@ function Login({
       <div className="login-section">
         <div className="container">
           <div className="login-card">
+            <div className="go-to-home">
+              <img src={homeImage} alt="home" onClick={() => navigate('/')} />
+            </div>
             <form className="login-div">
               <h1>Login</h1>
               <p>
@@ -106,7 +113,7 @@ function LoginContainer() {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState<any>({ email: '', password: '' });
   const [message, setMessage] = useState('');
-  const [serverError, setServerError] = useState<boolean>(false);
+  const [serverError, setServerError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const userLogin = async (event: React.SyntheticEvent<HTMLElement>) => {
@@ -158,7 +165,7 @@ function LoginContainer() {
         setMessage(data.message);
       }
     } catch (error) {
-      setServerError(true);
+      setServerError(error);
     } finally {
       setLoading(false);
     }

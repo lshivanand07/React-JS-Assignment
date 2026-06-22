@@ -7,6 +7,7 @@ import withLoader from '../../hoc/withLoader';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import CreateUser from '../../services/signUpApi';
 import { useNavigate } from 'react-router-dom';
+import homeImage from '../../assets/home.png';
 
 interface SignupProps {
   userRegistration: () => void;
@@ -43,9 +44,14 @@ function Signup({
     }));
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="signup">
       <div className="container">
+        <div className="go-to-home">
+          <img src={homeImage} alt="home" onClick={() => navigate('/')} />
+        </div>
         <form className="signup-div">
           <h1 className="sign-up-heading">Sign Up</h1>
           <p>
@@ -145,7 +151,8 @@ function SignupContainer() {
       const data = await CreateUser(signUpData);
       setMessage(data);
       setShowPopup(true);
-    } catch (error) {
+    } catch (error: any) {
+      alert(JSON.stringify(error.response?.data?.message));
       setServerError(true);
     } finally {
       setLoading(false);

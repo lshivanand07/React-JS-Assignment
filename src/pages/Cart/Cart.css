@@ -41,6 +41,12 @@
   display: flex;
   justify-content: flex-end;
   margin-left: auto;
+  gap: 20px;
+}
+
+.palce-order-btn h2 {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 .empty-cart-div h3 {
@@ -82,7 +88,7 @@
   .palce-order-btn {
     width: 100%;
     padding: 15px;
-    justify-content: center;
+
     box-sizing: border-box;
   }
 

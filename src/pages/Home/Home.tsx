@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import './Home.css';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
@@ -8,6 +9,8 @@ import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
 import { useDispatch, useSelector } from 'react-redux';
 import { setProduct } from '../../redux/slices/productSlice';
+import MobileMenu from '../../components/MobileMenu/MobileMenu';
+import Button from '../../components/Buttons/Button';
 
 interface HomeProps {
   products: any[];
@@ -28,7 +31,7 @@ function Home({ products, navigate, message }: HomeProps) {
                 key={product.product_id}
                 onClick={() => navigate(`/products/${product.product_id}`)}
               >
-                <div className="product_img">
+                <div className="product_images">
                   <img src={product.image_url} />
                 </div>
                 <h3>{product.product_name}</h3>
@@ -42,10 +45,17 @@ function Home({ products, navigate, message }: HomeProps) {
                 </p>
               </div>
             ))}
+          {products.length === 0 && message && (
+            <>
+              <div className="product-not-found-div">
+                <h3>{message}</h3>
+                <Button text="Home Page" onClick={() => navigate('/')}></Button>
+              </div>
+            </>
+          )}
         </div>
-
-        {!products && message && <h3>{message}</h3>}
       </div>
+      <MobileMenu />
       <Footer />
     </div>
   );
@@ -56,10 +66,11 @@ const EnhancedHome = withLoader(withErrorHandling(Home));
 function HomeContainer() {
   const navigate = useNavigate();
   const location = useLocation();
-  const productName = location.state?.product_name;
+  let productName = location.state?.product_name;
   const [serverError, setServerError] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [searchProducts, setSearchProducts] = useState<any[]>([]);
 
   const dispatch = useDispatch();
   const products = useSelector((state: any) => state.product.productItem);
@@ -81,22 +92,30 @@ function HomeContainer() {
   }, []);
 
   useEffect(() => {
-    if (!productName) return;
-
-    const matchedProduct = products.find((element: any) =>
-      element.product_name.toLowerCase().includes(productName.toLowerCase())
-    );
-
-    if (!matchedProduct) {
-      setMessage('Product not found');
+    if (!productName) {
+      setSearchProducts(Array.isArray(products) ? products : []);
       return;
     }
-    navigate(`/products/${matchedProduct.product_id}`);
+
+    const productList = Array.isArray(products) ? products : [];
+
+    const matchedProducts = productList.filter((product: any) =>
+      product.product_name?.toLowerCase().includes(productName.toLowerCase())
+    );
+
+    setSearchProducts(matchedProducts);
+
+    if (matchedProducts.length === 0) {
+      setMessage('Product not found');
+      productName = '';
+    } else {
+      setMessage('');
+    }
   }, [productName, products]);
 
   return (
     <EnhancedHome
-      products={products}
+      products={searchProducts}
       serverError={serverError}
       loading={loading}
       navigate={navigate}
