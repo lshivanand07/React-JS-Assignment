@@ -16,7 +16,7 @@ interface SellProductProps {
   setShowPopup: (value: boolean) => void;
 }
 
-const sellProduct = ({
+const SellProduct = ({
   message,
   productData,
   setProductData,
@@ -129,7 +129,7 @@ const sellProduct = ({
         <h3>Variants</h3>
 
         {Array.from({ length: count }).map((_, index: number) => (
-          <div key={index}>
+          <div key={count}>
             <p>varient {index + 1}</p>
             <form className="product-variants">
               <input
@@ -229,7 +229,7 @@ const sellProduct = ({
   );
 };
 
-const EnhancedSellProduct = withLoader(withErrorHandling(sellProduct));
+const EnhancedSellProduct = withLoader(withErrorHandling(SellProduct));
 
 function SellProductContainer() {
   const [loading, setLoading] = useState<boolean>(false);

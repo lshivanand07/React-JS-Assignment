@@ -19,10 +19,8 @@ interface OrdersProps {
   navigate: any;
   popupModelFunction: () => void;
   showPopup: boolean;
-  handlePlaceOrder: () => void;
   handleCancelOrder: () => void;
   handleConfirmOrder: () => void;
-  handlePaymentMethod: () => void;
   checkoutData: {
     payment_method_name: string;
     address_status: string;
@@ -47,7 +45,7 @@ function Orders({
   addressData,
 
   orderTotalAmount,
-}: OrdersProps) {
+}: Readonly<OrdersProps>) {
   console.log('message', message);
   return (
     <>
@@ -59,7 +57,7 @@ function Orders({
           {!showPaymentMethodChoice && (
             <div className="order-items">
               {orderData?.map((items: any) => (
-                <div className="items-cards">
+                <div className="items-cards" key={items.order_id}>
                   <h3>Product Name: {items?.product_name}</h3>
                   <p>Description: {items.description}</p>
                   <p>quantity: {items.quantity}</p>
@@ -86,70 +84,69 @@ function Orders({
           )}
 
           {showPaymentMethodChoice && (
-            <>
-              <div className="overlay">
-                <div className="total-price">
-                  <h3>Total Price: {orderTotalAmount}</h3>
-                </div>
-                <select
-                  value={checkoutData.payment_method_name}
-                  onChange={(event) =>
-                    setCheckoutData((prev: any) => ({
-                      ...prev,
-                      payment_method_name: event?.target.value,
-                    }))
-                  }
-                >
-                  <option value="" disabled>
-                    -- Select Payment Method --
-                  </option>
-                  <option value="COD">COD</option>
-                  <option value="UPI">UPI</option>
-                  <option value="CARD">CARD</option>
-                  <option value="Netbanking">Netbanking</option>
-                  <option value="Wallet">Wallet</option>
-                </select>
-
-                <div className="order-addresses">
-                  {addressData[0] ? (
-                    addressData.map((data) => (
-                      <div
-                        className={`order-address-card ${checkoutData.address_status === data.user_address_status ? 'selected-address' : ''}`}
-                        onClick={() =>
-                          setCheckoutData((prev: any) => ({
-                            ...prev,
-                            address_status: data.user_address_status,
-                          }))
-                        }
-                      >
-                        <h3 className="user-address-status">
-                          {data.user_address_status} Address
-                        </h3>
-                        <p>
-                          {data.country} {data.state}
-                        </p>
-                        <p>
-                          {data.districts} {data.city}
-                        </p>
-                        <p>{data.street}</p>
-                        <p>{data.landmark}</p>
-                        <p>{data.pincode}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <Button
-                      text="Add order address"
-                      onClick={() => navigate('/address')}
-                    ></Button>
-                  )}
-                </div>
-                <div className="order-confirm-cancel-btn">
-                  <button onClick={handleConfirmOrder}>Confirm</button>
-                  <button onClick={handleCancelOrder}>Cancel</button>
-                </div>
-                <p className="error">{message}</p>
+            <div className="overlay">
+              <div className="total-price">
+                <h3>Total Price: {orderTotalAmount}</h3>
               </div>
-            </>
+              <select
+                value={checkoutData.payment_method_name}
+                onChange={(event) =>
+                  setCheckoutData((prev: any) => ({
+                    ...prev,
+                    payment_method_name: event?.target.value,
+                  }))
+                }
+              >
+                <option value="" disabled>
+                  -- Select Payment Method --
+                </option>
+                <option value="COD">COD</option>
+                <option value="UPI">UPI</option>
+                <option value="CARD">CARD</option>
+                <option value="Netbanking">Netbanking</option>
+                <option value="Wallet">Wallet</option>
+              </select>
+
+              <div className="order-addresses">
+                {addressData[0] ? (
+                  addressData.map((data) => (
+                    <button
+                      key={data.address_id}
+                      className={`order-address-card ${checkoutData.address_status === data.user_address_status ? 'selected-address' : ''}`}
+                      onClick={() =>
+                        setCheckoutData((prev: any) => ({
+                          ...prev,
+                          address_status: data.user_address_status,
+                        }))
+                      }
+                    >
+                      <h3 className="user-address-status">
+                        {data.user_address_status} Address
+                      </h3>
+                      <p>
+                        {data.country} {data.state}
+                      </p>
+                      <p>
+                        {data.districts} {data.city}
+                      </p>
+                      <p>{data.street}</p>
+                      <p>{data.landmark}</p>
+                      <p>{data.pincode}</p>
+                    </button>
+                  ))
+                ) : (
+                  <Button
+                    text="Add order address"
+                    onClick={() => navigate('/address')}
+                  ></Button>
+                )}
+              </div>
+              <div className="order-confirm-cancel-btn">
+                <button onClick={handleConfirmOrder}>Confirm</button>
+                <button onClick={handleCancelOrder}>Cancel</button>
+              </div>
+              <p className="error">{message}</p>
+            </div>
           )}
 
           {message && (

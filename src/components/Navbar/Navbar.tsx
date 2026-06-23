@@ -1,9 +1,8 @@
 import './Navbar.css';
 import Button from '../Buttons/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import logo from '../../assets/logo.png';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 function Navbar() {
   const [searchMessage, setSearchMessage] = useState('');
@@ -62,8 +61,8 @@ function Navbar() {
               <div className="account-menu">
                 <button className="account-btn">My Account ▼ </button>
                 <div className="dropdown">
-                  <p onClick={() => navigate('/orders')}>Orders</p>
-                  <p onClick={() => navigate('/profile')}>Profile</p>
+                  <Link to="/orders">Orders</Link>
+                  <Link to="/profile">Profile</Link>
                 </div>
               </div>
               <button className="logout-button" onClick={handleLogout}>
@@ -80,9 +79,9 @@ function Navbar() {
           <div className="account-menu">
             <Button text="More ▼"></Button>
             <div className="dropdown">
-              <p onClick={() => navigate('/seller-account')}>Become a Seller</p>
-              <p onClick={() => navigate('')}>Notification Settings</p>
-              <p onClick={() => navigate('')}>24*7 Customer Care</p>
+              <Link to="/seller-account">Become a Seller</Link>
+              <Link to="">Notification Settings</Link>
+              <Link to="">24*7 Customer Care</Link>
             </div>
           </div>
         </div>

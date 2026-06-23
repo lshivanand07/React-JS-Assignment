@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from '../../components/Buttons/Button';
 import { useState } from 'react';
 import { createUserAddress, editAddress } from '../../services/addressApi';
@@ -162,7 +163,7 @@ const EnhancedAddresses = withLoader(withErrorHandling(Addresses));
 function AddressContainer() {
   const navigate = useNavigate();
   const location = useLocation();
-  let userAddressStatus = location?.state?.addressStatus;
+  const userAddressStatus = location?.state?.addressStatus;
 
   const [loading, setLoading] = useState<boolean>(false);
   const [serverError, setServerError] = useState<Error | null>(null);
@@ -185,13 +186,13 @@ function AddressContainer() {
       console.log({
         address,
       });
-      if (!userAddressStatus) {
-        const createData = await createUserAddress(address);
-        setMessage(createData.message);
-      } else {
+      if (userAddressStatus) {
         const editData = await editAddress(address, userAddressStatus);
         console.log('editData ', editData.message);
         setMessage(editData.message);
+      } else {
+        const createData = await createUserAddress(address);
+        setMessage(createData.message);
       }
       setShowPopup(true);
       navigate('/address');
@@ -203,7 +204,6 @@ function AddressContainer() {
   };
 
   function resetForm() {
-    location.state.addressStatus = '';
     setAddress({
       country: '',
       state: '',

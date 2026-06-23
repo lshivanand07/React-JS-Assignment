@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import { fetchCartDetails } from '../../services/cartApi';
-import { deleteCartItem } from '../../services/cartApi';
+import { fetchCartDetails, deleteCartItem } from '../../services/cartApi';
 import './Cart.css';
 import Button from '../../components/Buttons/Button';
 import withLoader from '../../hoc/withLoader';
@@ -34,7 +34,17 @@ const CartDataList = ({
   setSelectedItem,
 }: CartListProps) => {
   const totalPrice = cartItems[0]?.reduce((total: number, item: any) => {
-    return total + Number(item.price) * Number(item.quantity);
+    console.log('hi ', item.discount_percentage / 100);
+    return (
+      total +
+      Number(
+        (
+          Number(item.price) *
+          (1 - item.discount_percentage / 100) *
+          Number(item.quantity)
+        ).toFixed(2)
+      )
+    );
   }, 0);
 
   return (
@@ -47,9 +57,12 @@ const CartDataList = ({
             <h1 className="cart-heading">My Cart</h1>
             <div className="carts">
               {cartItems[0]?.map((item: any) => (
-                <div className="cart">
+                <div
+                  className="cart"
+                  key={`${item.product_id}-${item.variant_id}`}
+                >
                   <div className="product_img">
-                    <img src={item.image_url} />
+                    <img src={item.image_url} alt="product" />
                   </div>
                   <h2>{item.product_name}</h2>
                   <p>Price: ₹{item.price}</p>
@@ -143,6 +156,7 @@ const CartDataContainer = () => {
     try {
       setLoading(true);
       const data = await fetchCartDetails();
+      console.log(data);
       dispatch(setCart(data));
       setMessage(data.message);
       console.log(data);

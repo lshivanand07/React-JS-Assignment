@@ -57,7 +57,9 @@ function Login({
         <div className="container">
           <div className="login-card">
             <div className="go-to-home">
-              <img src={homeImage} alt="home" onClick={() => navigate('/')} />
+              <button onClick={() => navigate('/')}>
+                <img src={homeImage} alt="home" />
+              </button>
             </div>
             <form className="login-div">
               <h1>Login</h1>

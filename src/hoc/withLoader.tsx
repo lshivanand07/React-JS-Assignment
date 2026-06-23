@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Loader from '../components/Loader/Loader';
 
 function withLoader(WrappedComponent: React.ComponentType<any>) {

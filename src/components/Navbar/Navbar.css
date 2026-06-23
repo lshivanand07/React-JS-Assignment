@@ -63,13 +63,17 @@ header {
   border-radius: 10px;
 }
 
-.dropdown p {
+.dropdown a {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: black;
   margin: 0;
   padding: 10px;
   cursor: pointer;
 }
 
-.dropdown p:hover {
+.dropdown a:hover {
   background-color: #f5f5f5;
 }
 

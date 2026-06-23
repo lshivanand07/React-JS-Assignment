@@ -1,4 +1,4 @@
-interface validationSignUp {
+interface ValidationSignUp {
   user_name: string;
   email: string;
   role: string;
@@ -12,14 +12,14 @@ interface ValidationErrors {
   password?: string;
 }
 
-const validateSignup = (signUpData: validationSignUp): ValidationErrors => {
+const validateSignup = (signUpData: ValidationSignUp): ValidationErrors => {
   const errors: ValidationErrors = {};
 
   if (!signUpData.user_name.trim()) {
     errors.user_name = 'Name is required';
   }
 
-  const emailPattern = /([a-z]+)([0-9]*)([@]{1})([a-z]+)([.]{1})([a-z]+)/;
+  const emailPattern = /([a-z]+)(\d*)(@)([a-z]+)(\.)([a-z]+)/;
 
   if (signUpData.email === '') {
     errors.email = 'Email field is mandatory';

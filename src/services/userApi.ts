@@ -10,7 +10,7 @@ export async function fetchAllUser() {
   return response.data;
 }
 
-interface editUserProps {
+interface EditUserProps {
   user_name: string;
   dob: string;
   phone: string;
@@ -18,7 +18,7 @@ interface editUserProps {
   age: number;
 }
 
-export async function editUser(editedProfileData: editUserProps) {
+export async function editUser(editedProfileData: EditUserProps) {
   console.log('api ', editedProfileData);
   const response = await api.put('/edit-one-user', editedProfileData);
   return response.data;

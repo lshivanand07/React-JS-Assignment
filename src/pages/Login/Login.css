@@ -18,7 +18,6 @@
   width: 50px;
   height: 50px;
   padding: 8px;
-  background-color: white;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -27,11 +26,6 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-.go-to-home:hover {
-  transform: scale(1.1);
-  transition: 0.3s;
 }
 
 .login-div {
@@ -83,10 +77,5 @@
 @media (max-width: 768px) {
   .login-div {
     padding: 25px;
-  }
-
-  .go-to-home {
-    width: 30px;
-    height: 30px;
   }
 }

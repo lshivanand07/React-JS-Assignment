@@ -69,16 +69,15 @@
 @media screen and (max-width: 768px) {
   .profile-dashboard {
     flex-direction: column;
-    margin: 0px;
+    margin: 10px;
     gap: 15px;
   }
 
   .dashboard-buttons {
     display: flex;
     flex-wrap: wrap;
+    flex-direction: row;
     min-height: auto;
-    gap: 5px;
-    padding: 5px;
   }
 
   .dashboard-info {
@@ -108,5 +107,17 @@
 
   .dashboard-info-heading {
     font-size: 22px;
+  }
+}
+
+@media screen and (max-width: 424px) {
+  .dashboard-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+    margin: 5px;
+    min-height: auto;
   }
 }

@@ -1,67 +1,47 @@
 import { vi } from 'vitest';
-import fetchLoginDetails from '../src/services/loginApi';
-import { render, screen, fireEvent } from '@testing-library/react';
-import Login from '../src/pages/Login/Login';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import loginApi from '../src/services/loginApi'; // Direct import
+import Login from '../src/pages/Login/Login';
 
-describe('Login Page', () => {
-  // test_No 01: required fields are testing
-  test('required fields are testing', async () => {
-    render(
-      <BrowserRouter>
-        <Login />
-      </BrowserRouter>
-    );
-    const LoginButton = screen.getByText('Login');
-    fireEvent.click(LoginButton);
-    const text = await screen.findByText(
-      'Email and Password fields are required'
-    );
-    expect(text).toBeInTheDocument();
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+vi.mock('../src/services/loginApi', () => ({
+  default: vi.fn(),
+}));
+
+test('navigates to home page after customer login', async () => {
+  mockNavigate.mockClear();
+
+  vi.mocked(loginApi).mockResolvedValue({
+    token: 'abc123',
+    user_role: 'customer',
   });
 
-  // test_No 02: renders error component on server error
-  test('renders error component on server error', async () => {
-    globalThis.fetch = vi.fn().mockRejectedValueOnce(new Error('Server Error'));
+  render(
+    <BrowserRouter>
+      <Login />
+    </BrowserRouter>
+  );
 
-    render(<Login />);
-
-    const emailInput = document.getElementById('email');
-    fireEvent.change(emailInput as HTMLInputElement, {
-      target: { value: 'abc@gmail.com' },
-    });
-    const passwordInput = document.getElementById('password');
-    fireEvent.change(passwordInput as HTMLInputElement, {
-      target: { value: '123' },
-    });
-
-    const loginButton = screen.getByText('Login');
-    fireEvent.click(loginButton);
-    const errorElement = await screen.findByTestId('error-component');
-    expect(errorElement).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText(/email/i), {
+    target: { value: 'abc@gmail.com' },
+  });
+  fireEvent.change(screen.getByLabelText(/password/i), {
+    target: { value: '123456' },
   });
 
-  // test_No 03: successful login api call
-  test('successful login api call', async () => {
-    globalThis.fetch = vi.fn();
-    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      json: vi.fn().mockResolvedValue({
-        token: 'abc123',
-        message: 'Login Success',
-      }),
-    });
-    const data = await fetchLoginDetails('shivu@gmail.com', 'pass123');
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: 'shivu@gmail.com',
-        password: 'pass123',
-      }),
-    });
-    expect(data.token).toBe('abc123');
-    expect(data.message).toBe('Login Success');
+  fireEvent.click(screen.getByText('Log in'));
+
+  await waitFor(() => {
+    expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 });

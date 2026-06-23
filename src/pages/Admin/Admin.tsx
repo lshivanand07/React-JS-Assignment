@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
 import logo from '../../assets/logo.png';
@@ -46,7 +47,7 @@ function AdminPage({
   showDashboard,
   filterData,
   columns,
-}: AdminProps) {
+}: Readonly<AdminProps>) {
   return (
     <>
       <header>
@@ -62,32 +63,29 @@ function AdminPage({
       <div className="container">
         <div className="admin-pannel">
           <div className="sidebar">
-            <div className="buttons-div" onClick={getDashboardRecord}>
-              Dashboard
+            <div className="buttons-div">
+              <button onClick={getDashboardRecord}>Dashboard</button>
             </div>
-            <div className="buttons-div" onClick={() => getUsersByRole('')}>
-              Users
+            <div className="buttons-div">
+              <button onClick={() => getUsersByRole('')}>Users</button>
             </div>
-            <div className="buttons-div" onClick={getProducts}>
-              Products
+            <div className="buttons-div">
+              <button onClick={getProducts}>Products</button>
             </div>
-            <div className="buttons-div" onClick={getOrders}>
-              Orders
+            <div className="buttons-div">
+              <button onClick={getOrders}> Orders</button>
             </div>
-            <div
-              className="buttons-div"
-              onClick={() => getUsersByRole('customer')}
-            >
-              Customers
+            <div className="buttons-div">
+              <button onClick={() => getUsersByRole('customer')}>
+                {' '}
+                Customers
+              </button>
             </div>
-            <div
-              className="buttons-div"
-              onClick={() => getUsersByRole('seller')}
-            >
-              Sellers
+            <div className="buttons-div">
+              <button onClick={() => getUsersByRole('seller')}>Sellers</button>
             </div>
-            <div className="buttons-div" onClick={adminLogout}>
-              Logout
+            <div className="buttons-div">
+              <button onClick={adminLogout}> Logout</button>
             </div>
           </div>
           <div className="table-container">
@@ -239,8 +237,10 @@ function AdminContainer() {
 
   function filterRecord(searchValue: string) {
     const newRecord = data.filter((record: any) =>
-      Object.values(record).some((value) =>
-        String(value).toLowerCase().includes(searchValue.toLowerCase())
+      Object.values(record).some(
+        (value) =>
+          typeof value !== 'object' &&
+          String(value).toLowerCase().includes(searchValue.toLowerCase())
       )
     );
     setFilterData(newRecord);

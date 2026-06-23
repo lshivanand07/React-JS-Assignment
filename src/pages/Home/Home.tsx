@@ -18,7 +18,7 @@ interface HomeProps {
   message: string;
 }
 
-function Home({ products, navigate, message }: HomeProps) {
+function Home({ products, navigate, message }: Readonly<HomeProps>) {
   return (
     <div className="home-page">
       <Navbar />
@@ -26,13 +26,14 @@ function Home({ products, navigate, message }: HomeProps) {
         <div className="products">
           {Array.isArray(products) &&
             products?.map((product) => (
-              <div
+              <button
                 className="product-card"
                 key={product.product_id}
+                tabIndex={0}
                 onClick={() => navigate(`/products/${product.product_id}`)}
               >
                 <div className="product_images">
-                  <img src={product.image_url} />
+                  <img src={product.image_url} alt="products" />
                 </div>
                 <h3>{product.product_name}</h3>
                 <p className="uppercase">{product.description}</p>
@@ -43,15 +44,13 @@ function Home({ products, navigate, message }: HomeProps) {
                     : 0}
                   %
                 </p>
-              </div>
+              </button>
             ))}
           {products.length === 0 && message && (
-            <>
-              <div className="product-not-found-div">
-                <h3>{message}</h3>
-                <Button text="Home Page" onClick={() => navigate('/')}></Button>
-              </div>
-            </>
+            <div className="product-not-found-div">
+              <h3>{message}</h3>
+              <Button text="Home Page" onClick={() => navigate('/')}></Button>
+            </div>
           )}
         </div>
       </div>

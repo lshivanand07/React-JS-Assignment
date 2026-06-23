@@ -56,7 +56,7 @@ function MyProfile({
   setShowPopup,
   editProfile,
   message,
-}: MyProfileProps) {
+}: Readonly<MyProfileProps>) {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -67,183 +67,172 @@ function MyProfile({
   };
 
   return (
-    <>
-      <>
-        <div>
-          <Navbar />
-          <div className="container">
-            <div className="profile-dashboard">
-              <div className="dashboard-buttons">
-                <div className="person-name-img">
-                  <img src={prsonImage} alt="person Img" />
-                  <h3>{userData?.user_name}</h3>
-                </div>
-                <Button text="Personal Info" onClick={fetchUserInfo}></Button>
-                <Button text="Addresses" onClick={fetchAddressInfo}></Button>
-                <Button text="Logout" onClick={handleLogout}></Button>
-              </div>
+    <div>
+      <Navbar />
+      <div className="container">
+        <div className="profile-dashboard">
+          <div className="dashboard-buttons">
+            <div className="person-name-img">
+              <img src={prsonImage} alt="person Img" />
+              <h3>{userData?.user_name}</h3>
+            </div>
+            <Button text="Personal Info" onClick={fetchUserInfo}></Button>
+            <Button text="Addresses" onClick={fetchAddressInfo}></Button>
+            <Button text="Logout" onClick={handleLogout}></Button>
+          </div>
 
-              <div className="dashboard-info">
-                <Breadcrumbs />
-                {activeTab === 'profile' && userData && (
-                  <>
-                    <h1 className="dashboard-info-heading">My Profile</h1>
-                    <p>Email: {userData?.email}</p>
-                    <p>DOB: {userData?.dob}</p>
-                    <p>age: {userData?.age}</p>
-                    <p>Gender: {userData?.gender}</p>
-                    <p>phone: {userData?.phone}</p>
-                    <p>role: {userData?.role}</p>
+          <div className="dashboard-info">
+            <Breadcrumbs />
+            {activeTab === 'profile' && userData && (
+              <>
+                <h1 className="dashboard-info-heading">My Profile</h1>
+                <p>Email: {userData?.email}</p>
+                <p>DOB: {userData?.dob}</p>
+                <p>age: {userData?.age}</p>
+                <p>Gender: {userData?.gender}</p>
+                <p>phone: {userData?.phone}</p>
+                <p>role: {userData?.role}</p>
+                <div className="edit-button">
+                  <Button
+                    text="Edit"
+                    onClick={() => setActiveTab('editProfile')}
+                  ></Button>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'editProfile' && (
+              <>
+                <h3>Manage Profile</h3>
+                <div className="edit-profile">
+                  <h4 style={{ color: 'blue' }}>Edit Profile</h4>
+                  <form className="profile-input">
+                    <input
+                      type="text"
+                      placeholder={userData?.user_name}
+                      name="user_name"
+                      value={editedProfileData.user_name}
+                      onChange={handleChange}
+                    />
+                    <input
+                      type="date"
+                      placeholder="Date of Birth"
+                      name="dob"
+                      value={editedProfileData.dob}
+                      onChange={handleChange}
+                    />
+                    <input
+                      type="tel"
+                      placeholder="EX: 918618581627"
+                      minLength={10}
+                      name="phone"
+                      value={editedProfileData.phone}
+                      onChange={handleChange}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Enter your age"
+                      name="age"
+                      value={editedProfileData.age}
+                      onChange={handleChange}
+                    />
+
+                    <div>
+                      Gender
+                      <div className="profile-radio-Btn">
+                        <input
+                          type="radio"
+                          id="Male"
+                          name="gender"
+                          value="Male"
+                          checked={editedProfileData.gender === 'Male'}
+                          onChange={handleChange}
+                        />
+                        <label htmlFor="Male">Male</label>
+                        <input
+                          type="radio"
+                          id="Female"
+                          name="gender"
+                          value="Female"
+                          checked={editedProfileData.gender === 'Female'}
+                          onChange={handleChange}
+                        />
+                        <label htmlFor="Female">Female</label>
+                      </div>
+                    </div>
+                  </form>
+
+                  <div className="save-cancel-btn">
+                    <Button text="Save" onClick={editProfile}></Button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'address' && addressData[0] && (
+              <>
+                <h1 className="dashboard-info-heading">My Address</h1>
+                <div className="user-addresses"></div>
+                {addressData.map((addressData) => (
+                  <div className="address" key={addressData.address_id}>
+                    <p>Address Status: {addressData?.user_address_status}</p>
+                    <p>country: {addressData?.country}</p>
+                    <p>State: {addressData?.state}</p>
+                    <p>Districts: {addressData?.districts}</p>
+                    <p>City: {addressData?.city}</p>
+                    <p>Street: {addressData?.street}</p>
+                    <p>Landmark: {addressData?.landmark}</p>
+                    <p>Pincode: {addressData?.pincode}</p>
                     <div className="edit-button">
                       <Button
                         text="Edit"
-                        onClick={() => setActiveTab('editProfile')}
-                      ></Button>
-                    </div>
-                  </>
-                )}
-
-                {activeTab === 'editProfile' && (
-                  <>
-                    <h3>Manage Profile</h3>
-                    <div className="edit-profile">
-                      <h4 style={{ color: 'blue' }}>Edit Profile</h4>
-                      <form className="profile-input">
-                        <input
-                          type="text"
-                          placeholder={userData?.user_name}
-                          name="user_name"
-                          value={editedProfileData.user_name}
-                          onChange={handleChange}
-                        />
-                        <input
-                          type="date"
-                          placeholder="Date of Birth"
-                          name="dob"
-                          value={editedProfileData.dob}
-                          onChange={handleChange}
-                        />
-                        <input
-                          type="tel"
-                          placeholder="EX: 918618581627"
-                          minLength={10}
-                          name="phone"
-                          value={editedProfileData.phone}
-                          onChange={handleChange}
-                        />
-                        <input
-                          type="number"
-                          placeholder="Enter your age"
-                          name="age"
-                          value={editedProfileData.age}
-                          onChange={handleChange}
-                        />
-
-                        <div>
-                          Gender
-                          <div className="profile-radio-Btn">
-                            <input
-                              type="radio"
-                              id="Male"
-                              name="gender"
-                              value="Male"
-                              checked={editedProfileData.gender === 'Male'}
-                              onChange={handleChange}
-                            />
-                            <label htmlFor="Male">Male</label>
-                            <input
-                              type="radio"
-                              id="Female"
-                              name="gender"
-                              value="Female"
-                              checked={editedProfileData.gender === 'Female'}
-                              onChange={handleChange}
-                            />
-                            <label htmlFor="Female">Female</label>
-                          </div>
-                        </div>
-                      </form>
-
-                      <div className="save-cancel-btn">
-                        <Button text="Save" onClick={editProfile}></Button>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {activeTab === 'address' && addressData[0] && (
-                  <>
-                    <h1 className="dashboard-info-heading">My Address</h1>
-                    <div className="user-addresses"></div>
-                    {addressData.map((addressData) => (
-                      <div className="address">
-                        <p>
-                          Address Status: {addressData?.user_address_status}
-                        </p>
-                        <p>country: {addressData?.country}</p>
-                        <p>State: {addressData?.state}</p>
-                        <p>Districts: {addressData?.districts}</p>
-                        <p>City: {addressData?.city}</p>
-                        <p>Street: {addressData?.street}</p>
-                        <p>Landmark: {addressData?.landmark}</p>
-                        <p>Pincode: {addressData?.pincode}</p>
-                        <div className="edit-button">
-                          <Button
-                            text="Edit"
-                            onClick={() =>
-                              EditUserAddress(addressData?.user_address_status)
-                            }
-                          ></Button>
-                        </div>
-                      </div>
-                    ))}
-                    <Button
-                      text="ADD ADDRESSES"
-                      onClick={() => setActiveTab('addNewAddress')}
-                    ></Button>
-                  </>
-                )}
-
-                {activeTab === 'address' && !addressData[0] && (
-                  <>
-                    <div className="no-addresses-found">
-                      <img src={notAddressFound} alt="person Img" />
-                      <h3>No Addresses found in your account!</h3>
-                      <p>Add a delivery address.</p>
-                      <Button
-                        text="ADD ADDRESSES"
-                        onClick={() => setActiveTab('addNewAddress')}
-                      ></Button>
-                    </div>
-                  </>
-                )}
-
-                {(activeTab === 'addNewAddress' ||
-                  activeTab === 'editAddress') && (
-                  <>
-                    <AddressContainer />
-                  </>
-                )}
-
-                {showPopup && (
-                  <div className="model-overlay">
-                    <div className="modal-container">
-                      <h4>{message}</h4>
-                      <Button
-                        text="Ok"
-                        onClick={() => setShowPopup(false)}
+                        onClick={() =>
+                          EditUserAddress(addressData?.user_address_status)
+                        }
                       ></Button>
                     </div>
                   </div>
-                )}
+                ))}
+                <Button
+                  text="ADD ADDRESSES"
+                  onClick={() => setActiveTab('addNewAddress')}
+                ></Button>
+              </>
+            )}
+
+            {activeTab === 'address' && !addressData[0] && (
+              <div className="no-addresses-found">
+                <img src={notAddressFound} alt="person Img" />
+                <h3>No Addresses found in your account!</h3>
+                <p>Add a delivery address.</p>
+                <Button
+                  text="ADD ADDRESSES"
+                  onClick={() => setActiveTab('addNewAddress')}
+                ></Button>
               </div>
-            </div>
+            )}
+
+            {(activeTab === 'addNewAddress' || activeTab === 'editAddress') && (
+              <AddressContainer />
+            )}
+
+            {showPopup && (
+              <div className="model-overlay">
+                <div className="modal-container">
+                  <h4>{message}</h4>
+                  <Button
+                    text="Ok"
+                    onClick={() => setShowPopup(false)}
+                  ></Button>
+                </div>
+              </div>
+            )}
           </div>
-          <MobileMenu />
-          <Footer />
         </div>
-      </>
-    </>
+      </div>
+      <MobileMenu />
+      <Footer />
+    </div>
   );
 }
 
@@ -296,6 +285,11 @@ function MyProfileContainer() {
   async function editProfile() {
     try {
       setLoading(true);
+      if (editedProfileData.phone.length < 10) {
+        setMessage('Phone number must be at least 10 digits');
+        setShowPopup(true);
+        return;
+      }
       const data = await editUser(editedProfileData);
       console.log(data);
       setMessage(data.message);

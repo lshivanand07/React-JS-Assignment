@@ -4,7 +4,6 @@
 
 @media screen and (max-width: 768px) {
   .mobile-menu {
-    display: block;
     width: 100%;
     padding: 5px;
     display: flex;

@@ -21,6 +21,13 @@
   border-radius: 10px;
 }
 
+.items-cards p {
+  max-width: 330px;
+  height: 40px;
+  overflow-y: hidden;
+  margin: 0;
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -70,43 +77,26 @@ select {
   margin: 10px;
 }
 
-@media screen and (max-width: 768px) {
-  .orders {
-    padding: 0 10px;
-  }
-
-  .order-items {
-    flex-direction: row;
-    gap: 15px;
-  }
-
-  .items-cards {
-    width: 100%;
-    max-width: 350px;
-    box-sizing: border-box;
+@media screen and (max-width: 425px) {
+  .overlay {
+    position: relative;
   }
 
   .order-addresses {
+    display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
   }
 
   .order-address-card {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 15px;
+    padding: 5px;
   }
 
-  .order-confirm-cancel-btn {
-    flex-direction: column;
-    gap: 10px;
+  .overlay select {
+    min-width: 200px;
   }
-
-  .overlay {
-    padding: 15px;
-  }
-
-  .total-price {
-    text-align: center;
-    padding: 10px;
+  .order-address-card p {
+    margin: 0px;
+    min-width: 200px;
   }
 }

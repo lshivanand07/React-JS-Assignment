@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './product.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchProductById } from '../../services/ProductApi';
-import { useEffect } from 'react';
 import Button from '../../components/Buttons/Button';
-import { useNavigate } from 'react-router-dom';
 import { addCartItems } from '../../services/cartApi';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
@@ -36,7 +34,7 @@ function OneProductDetails({
   handleAddCart,
   showPopup,
   PopupModel,
-}: ProductDetails) {
+}: Readonly<ProductDetails>) {
   const item = productItems;
 
   const [selectedVariantItem, setSelectedVariantItem] = useState({
@@ -66,7 +64,7 @@ function OneProductDetails({
         <div className="product-veriants">
           <div className="product_img">
             {''}
-            <img src={item?.image} />{' '}
+            <img src={item?.image} alt="product" />{' '}
           </div>
 
           <div>
@@ -86,7 +84,7 @@ function OneProductDetails({
                   -- Color --
                 </option>
                 {productItems?.variants?.map((item: any) => (
-                  <option>{item.color}</option>
+                  <option key={item?.product_id}>{item.color}</option>
                 ))}
               </select>
 
@@ -103,7 +101,7 @@ function OneProductDetails({
                   -- Size --
                 </option>
                 {filteredColor?.map((item: any) => (
-                  <option>{item.size}</option>
+                  <option key={item?.product_id}>{item.size}</option>
                 ))}
               </select>
 
@@ -125,9 +123,10 @@ function OneProductDetails({
             <div className="overlay">
               <div className="add-items-in-cart-form">
                 <form>
-                  <label>Stock</label>
+                  <label htmlFor="stock">Stock</label>
 
                   <input
+                    id="stock"
                     type="number"
                     min={1}
                     onChange={(e) => setStock(Number(e.target.value))}

@@ -30,7 +30,7 @@ function Signup({
   setSignUpData,
   showPopup,
   popupFunction,
-}: SignupProps) {
+}: Readonly<SignupProps>) {
   const handleChangeEvent = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -50,7 +50,9 @@ function Signup({
     <div className="signup">
       <div className="container">
         <div className="go-to-home">
-          <img src={homeImage} alt="home" onClick={() => navigate('/')} />
+          <button onClick={() => navigate('/')}>
+            <img src={homeImage} alt="home" />
+          </button>
         </div>
         <form className="signup-div">
           <h1 className="sign-up-heading">Sign Up</h1>
@@ -64,6 +66,7 @@ function Signup({
             name="user_name"
             value={signUpData.user_name}
             onChange={handleChangeEvent}
+            placeholder="Enter your name"
           />
           <p className="error">{message?.user_name}</p>
           <label htmlFor="user_email">Email*: </label>
@@ -73,6 +76,7 @@ function Signup({
             name="email"
             value={signUpData.email}
             onChange={handleChangeEvent}
+            placeholder="Ex: shivu@gmail.com"
           />
           <p className="error">{message?.email}</p>
           <p>User Role</p>
@@ -104,6 +108,7 @@ function Signup({
             name="password"
             value={signUpData.password}
             onChange={handleChangeEvent}
+            placeholder="Enter your password"
           />
           <p className="error">{message?.password}</p>
           <Button text="Sign Up" onClick={userRegistration}></Button>
@@ -162,7 +167,6 @@ function SignupContainer() {
   function popupFunction() {
     setShowPopup(false);
     navigate('/');
-    return;
   }
 
   return (

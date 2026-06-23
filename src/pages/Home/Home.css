@@ -7,6 +7,13 @@
   justify-content: center;
 }
 
+.products button:hover {
+  background-color: rgb(241, 209, 187);
+  color: inherit;
+  transform: none;
+  box-shadow: none;
+}
+
 .product-card {
   margin: 0 auto;
   border: 2px solid black;
@@ -50,7 +57,7 @@
 
   .product-card {
     width: 45%;
-    max-width: 350px;
+    max-width: 230px;
     margin: 0;
     padding: 5px;
   }

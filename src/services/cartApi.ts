@@ -16,12 +16,12 @@ export async function addCartItems(payload: SelectedItem) {
   return response.data;
 }
 
-interface deleteCartItemByproductID {
+interface DeleteCartItemByproductID {
   productID: number;
   variantID: number;
 }
 
-export async function deleteCartItem(selectedItem: deleteCartItemByproductID) {
+export async function deleteCartItem(selectedItem: DeleteCartItemByproductID) {
   console.log('payload', selectedItem);
 
   const response = await api.delete(
