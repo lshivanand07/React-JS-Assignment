@@ -29,7 +29,7 @@
 }
 
 .login-div {
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(50px);
   padding: 50px;
   display: flex;
   flex-direction: column;
@@ -77,5 +77,16 @@
 @media (max-width: 768px) {
   .login-div {
     padding: 25px;
+  }
+
+  .go-to-home {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
   }
 }

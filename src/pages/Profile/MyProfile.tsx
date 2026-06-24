@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import './MyProfile.css';
 import { editUser, fetchUserById } from '../../services/userApi';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import prsonImage from '../../assets/person.png';
@@ -88,10 +88,10 @@ function MyProfile({
                 <h1 className="dashboard-info-heading">My Profile</h1>
                 <p>Email: {userData?.email}</p>
                 <p>DOB: {userData?.dob}</p>
-                <p>age: {userData?.age}</p>
+                <p>Age: {userData?.age}</p>
                 <p>Gender: {userData?.gender}</p>
-                <p>phone: {userData?.phone}</p>
-                <p>role: {userData?.role}</p>
+                <p>Phone: {userData?.phone}</p>
+                <p>Role: {userData?.role}</p>
                 <div className="edit-button">
                   <Button
                     text="Edit"
@@ -176,7 +176,7 @@ function MyProfile({
                 {addressData.map((addressData) => (
                   <div className="address" key={addressData.address_id}>
                     <p>Address Status: {addressData?.user_address_status}</p>
-                    <p>country: {addressData?.country}</p>
+                    <p>Country: {addressData?.country}</p>
                     <p>State: {addressData?.state}</p>
                     <p>Districts: {addressData?.districts}</p>
                     <p>City: {addressData?.city}</p>
@@ -338,10 +338,10 @@ function MyProfileContainer() {
     console.log('hi');
   }
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('userToken');
     navigate('/login');
-  };
+  }, [navigate]);
 
   return (
     <EnhancedMyProfile

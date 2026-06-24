@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { fetchProductDetails } from '../../services/ProductApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
 import { useDispatch, useSelector } from 'react-redux';
@@ -68,8 +68,6 @@ function HomeContainer() {
   let productName = location.state?.product_name;
   const [serverError, setServerError] = useState<any>();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [searchProducts, setSearchProducts] = useState<any[]>([]);
 
   const dispatch = useDispatch();
   const products = useSelector((state: any) => state.product.productItem);
@@ -90,27 +88,20 @@ function HomeContainer() {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    if (!productName) {
-      setSearchProducts(Array.isArray(products) ? products : []);
-      return;
-    }
-
+  const searchProducts = useMemo(() => {
     const productList = Array.isArray(products) ? products : [];
 
-    const matchedProducts = productList.filter((product: any) =>
+    if (!productName) {
+      return productList;
+    }
+
+    return productList.filter((product: any) =>
       product.product_name?.toLowerCase().includes(productName.toLowerCase())
     );
+  }, [products, productName]);
 
-    setSearchProducts(matchedProducts);
-
-    if (matchedProducts.length === 0) {
-      setMessage('Product not found');
-      productName = '';
-    } else {
-      setMessage('');
-    }
-  }, [productName, products]);
+  const message =
+    productName && searchProducts.length === 0 ? 'Product not found' : '';
 
   return (
     <EnhancedHome

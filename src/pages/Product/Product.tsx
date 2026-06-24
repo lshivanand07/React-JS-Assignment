@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams, useNavigate } from 'react-router-dom';
 import './product.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchProductById } from '../../services/ProductApi';
 import Button from '../../components/Buttons/Button';
 import { addCartItems } from '../../services/cartApi';
@@ -228,10 +228,10 @@ const ProductContainer = () => {
     }
   };
 
-  function PopupModel() {
+  const PopupModel = useCallback(() => {
     setShowPopup(false);
     navigate('/cart');
-  }
+  }, [navigate]);
 
   return (
     <EnhancedProducts

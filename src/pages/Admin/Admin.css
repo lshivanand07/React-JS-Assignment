@@ -42,6 +42,13 @@
   gap: 20px;
 }
 
+.add-product-user-btn {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 10px;
+}
+
 .flipkart-record {
   padding: 20px;
   width: 200px;
@@ -90,6 +97,14 @@
 
 .filter-table input {
   padding: 5px;
+}
+
+.data-table select {
+  width: 90%;
+}
+
+.user-action-btn {
+  display: flex;
 }
 
 @media screen and (max-width: 768px) {

@@ -63,9 +63,6 @@ function Login({
             </div>
             <form className="login-div">
               <h1>Login</h1>
-              <p>
-                Do not have an account? <a href="/signup">Sign-Up</a>
-              </p>
 
               <label htmlFor="email">Email</label>
 
@@ -94,10 +91,13 @@ function Login({
               {errors.password && <p className="error">{errors.password}</p>}
 
               <button onClick={userLogin} disabled={loading}>
-                Log in
+                Login
               </button>
 
               {message && <p className="error">{message}</p>}
+              <p>
+                Do not have an account? <a href="/signup">Sign-Up</a>
+              </p>
             </form>
           </div>
         </div>

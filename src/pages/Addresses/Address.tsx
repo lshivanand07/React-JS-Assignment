@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from '../../components/Buttons/Button';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createUserAddress, editAddress } from '../../services/addressApi';
 import './Address.css';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 interface AddreessesProps {
   insertUserAddress: () => void;
@@ -123,8 +124,8 @@ const Addresses = ({
                 type="radio"
                 id="HOME"
                 name="user_address_status"
-                value="HOME"
-                checked={address.user_address_status === 'HOME'}
+                value="home"
+                checked={address.user_address_status === 'home'}
                 onChange={handleChangeEvent}
               />
               <label htmlFor="HOME">Home</label>
@@ -132,8 +133,8 @@ const Addresses = ({
                 type="radio"
                 id="work"
                 name="user_address_status"
-                value="WORK"
-                checked={address.user_address_status === 'WORK'}
+                value="work"
+                checked={address.user_address_status === 'work'}
                 onChange={handleChangeEvent}
               />
               <label htmlFor="work">Work</label>
@@ -169,6 +170,8 @@ function AddressContainer() {
   const [serverError, setServerError] = useState<Error | null>(null);
   const [message, setMessage] = useState('');
   const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  const addressData = useSelector((state: any) => state.address.addressItem);
   const [address, setAddress] = useState({
     country: '',
     state: '',
@@ -179,6 +182,25 @@ function AddressContainer() {
     pincode: '',
     user_address_status: '',
   });
+
+  useEffect(() => {
+    const selectedAddress = addressData?.find(
+      (value: any) => value.user_address_status === userAddressStatus
+    );
+
+    if (selectedAddress) {
+      setAddress({
+        country: selectedAddress.country || '',
+        state: selectedAddress.state || '',
+        districts: selectedAddress.districts || '',
+        city: selectedAddress.city || '',
+        street: selectedAddress.street || '',
+        landmark: selectedAddress.landmark || '',
+        pincode: selectedAddress.pincode || '',
+        user_address_status: selectedAddress.user_address_status || '',
+      });
+    }
+  }, [addressData, userAddressStatus]);
 
   const insertUserAddress = async () => {
     try {
@@ -196,14 +218,15 @@ function AddressContainer() {
       }
       setShowPopup(true);
       navigate('/address');
-    } catch (error) {
-      setServerError(error as Error);
+    } catch (error: any) {
+      alert(error.response?.data?.message);
+      setServerError(error);
     } finally {
       setLoading(false);
     }
   };
 
-  function resetForm() {
+  const resetForm = useCallback(() => {
     setAddress({
       country: '',
       state: '',
@@ -214,7 +237,7 @@ function AddressContainer() {
       pincode: '',
       user_address_status: '',
     });
-  }
+  }, []);
 
   return (
     <EnhancedAddresses

@@ -50,11 +50,11 @@ function Navbar() {
               className="search-btn"
               onClick={() => searchProduct(searchMessage)}
             >
-              search
+              Search
             </button>
           </div>
           <button className="cart-button" onClick={() => navigate('/cart')}>
-            cart
+            Cart
           </button>
           {isLoggedIn ? (
             <>

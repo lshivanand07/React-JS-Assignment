@@ -11,6 +11,7 @@ import AddressContainer from '../pages/Addresses/Address';
 import SellerContainer from '../pages/Seller/Seller';
 import SellProductContainer from '../pages/SellNewProduct/SellNewProduct';
 import AdminContainer from '../pages/Admin/Admin';
+import AdminCreateUser from '../pages/AdminAddUser/AdminAddUser';
 import PageNotFound from '../pages/PageNotFound/PageNotFound';
 
 function AppRoutes() {
@@ -43,6 +44,8 @@ function AppRoutes() {
         <Route path="/admin/seller" element={<AdminContainer />} />
         <Route path="/admin/orders" element={<AdminContainer />} />
         <Route path="/admin/products" element={<AdminContainer />} />
+        <Route path="/admin/add-product" element={<SellProductContainer />} />
+        <Route path="/admin/add-user" element={<AdminCreateUser />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

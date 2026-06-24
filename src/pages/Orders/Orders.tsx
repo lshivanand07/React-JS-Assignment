@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import './Orders.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Footer from '../../components/Footer/Footer';
 import Navbar from '../../components/Navbar/Navbar';
 import { userOrders } from '../../services/ordersApi';
@@ -235,10 +235,10 @@ function OrdersContainer() {
     navigate('/cart');
   };
 
-  const popupModelFunction = () => {
+  const popupModelFunction = useCallback(() => {
     setShowPopup(false);
     fetchUserOrders();
-  };
+  }, [fetchUserOrders]);
 
   return (
     <EnhancedOrders

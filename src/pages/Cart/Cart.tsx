@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchCartDetails, deleteCartItem } from '../../services/cartApi';
 import './Cart.css';
 import Button from '../../components/Buttons/Button';
@@ -33,19 +33,18 @@ const CartDataList = ({
   setShowPopup,
   setSelectedItem,
 }: CartListProps) => {
-  const totalPrice = cartItems[0]?.reduce((total: number, item: any) => {
-    console.log('hi ', item.discount_percentage / 100);
+  const totalPrice = useMemo(() => {
     return (
-      total +
-      Number(
-        (
-          Number(item.price) *
-          (1 - item.discount_percentage / 100) *
-          Number(item.quantity)
-        ).toFixed(2)
-      )
+      cartItems?.[0]?.reduce((total: number, item: any) => {
+        const discountedPrice =
+          Number(item.price) * (1 - Number(item.discount_percentage) / 100);
+
+        return (
+          total + Number((discountedPrice * Number(item.quantity)).toFixed(2))
+        );
+      }, 0) || 0
     );
-  }, 0);
+  }, [cartItems]);
 
   return (
     <>
@@ -171,7 +170,7 @@ const CartDataContainer = () => {
     fetchCartItems();
   }, []);
 
-  async function deleteCartItems() {
+  const deleteCartItems = useCallback(async () => {
     try {
       setLoading(true);
       if (!selectedItem) {
@@ -186,21 +185,24 @@ const CartDataContainer = () => {
     } finally {
       setLoading(false);
     }
-  }
+  }, [selectedItem]);
 
-  function placeOrders(totalPrice: number) {
-    navigate('/orders', {
-      state: {
-        showPaymentMethodChoice: true,
-        total_price: totalPrice,
-      },
-    });
-  }
+  const placeOrders = useCallback(
+    (totalPrice: number) => {
+      navigate('/orders', {
+        state: {
+          showPaymentMethodChoice: true,
+          total_price: totalPrice,
+        },
+      });
+    },
+    [navigate]
+  );
 
-  function PopupModel() {
+  const PopupModel = useCallback(() => {
     setShowPopup(false);
     fetchCartItems();
-  }
+  }, []);
 
   return (
     <EnhancedCartList

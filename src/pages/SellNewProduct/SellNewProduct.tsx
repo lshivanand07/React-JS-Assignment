@@ -77,95 +77,132 @@ const SellProduct = ({
 
         <h3>Product</h3>
         <form className="product">
-          <input
-            type="text"
-            placeholder="Product Name"
-            name="product_name"
-            value={productData.product_name}
-            onChange={handleProductChange}
-          />
-          <textarea
-            placeholder="Description"
-            name="description"
-            value={productData.description}
-            onChange={handleProductChange}
-          ></textarea>
-          <input
-            type="text"
-            placeholder="Image URL"
-            name="image_url"
-            value={productData.image_url}
-            onChange={handleProductChange}
-          />
+          <div className="product-input-div">
+            <label htmlFor="product-name">Product Name</label>
+            <input
+              id="product-name"
+              type="text"
+              placeholder="Product Name"
+              name="product_name"
+              value={productData.product_name}
+              onChange={handleProductChange}
+            />
+          </div>
+          <div className="product-input-div">
+            <label htmlFor="image-url">Image URL</label>
+            <input
+              id="image-url"
+              type="text"
+              placeholder="Image URL"
+              name="image_url"
+              value={productData.image_url}
+              onChange={handleProductChange}
+            />
+          </div>
+          <div className="product-input-div">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              placeholder="Description"
+              name="description"
+              rows={1}
+              value={productData.description}
+              onChange={handleProductChange}
+            ></textarea>
+          </div>
         </form>
 
         <h3>Discount</h3>
 
         <form className="discount">
-          <input
-            type="number"
-            placeholder="Discount %"
-            name="discount_percentage"
-            value={productData.discount_percentage}
-            onChange={handleDiscountChange}
-            min={1}
-          />
-          <input
-            type="date"
-            placeholder="Start Date"
-            name="start_date"
-            value={productData.start_date}
-            onChange={handleDiscountChange}
-          />
-          <input
-            type="date"
-            placeholder="End Date"
-            name="end_date"
-            value={productData.end_date}
-            onChange={handleDiscountChange}
-          />
+          <div className="product-input-div">
+            <label htmlFor="discount-percentage">Discount</label>
+            <input
+              id="discount-percentage"
+              type="number"
+              placeholder="Discount %"
+              name="discount_percentage"
+              value={productData.discount_percentage}
+              onChange={handleDiscountChange}
+              min={1}
+            />
+          </div>
+          <div className="product-input-div">
+            <label htmlFor="start-date">Start Date</label>
+            <input
+              id="start-date"
+              type="date"
+              placeholder="Start Date"
+              name="start_date"
+              value={productData.start_date}
+              onChange={handleDiscountChange}
+            />
+          </div>
+          <div className="product-input-div">
+            <label htmlFor="end-date">End Date</label>
+            <input
+              id="end-date"
+              type="date"
+              placeholder="End Date"
+              name="end_date"
+              value={productData.end_date}
+              onChange={handleDiscountChange}
+            />
+          </div>
         </form>
 
         <h3>Variants</h3>
 
         {Array.from({ length: count }).map((_, index: number) => (
-          <div key={count}>
+          <div>
             <p>varient {index + 1}</p>
             <form className="product-variants">
-              <input
-                id="size"
-                type="text"
-                placeholder="enter size of produt"
-                name="size"
-                value={productData.size}
-                onChange={(e) => handleVariantChange(e, index)}
-              />
-              <input
-                id="color"
-                type="text"
-                placeholder="enter color of produt"
-                name="color"
-                value={productData.color}
-                onChange={(e) => handleVariantChange(e, index)}
-              />
-              <input
-                id="price"
-                type="number"
-                placeholder="set price for product"
-                name="price"
-                value={productData.price}
-                onChange={(e) => handleVariantChange(e, index)}
-                min={1}
-              />
-              <input
-                id="stock"
-                type="number"
-                placeholder="set product stock"
-                name="stock"
-                value={productData.stock}
-                onChange={(e) => handleVariantChange(e, index)}
-                min={1}
-              />
+              <div className="product-input-div">
+                <label htmlFor="size">Size</label>
+                <input
+                  id="size"
+                  type="text"
+                  placeholder="enter size of produt"
+                  name="size"
+                  value={productData.size}
+                  onChange={(e) => handleVariantChange(e, index)}
+                />
+              </div>
+              <div className="product-input-div">
+                <label htmlFor="color">Color</label>
+                <input
+                  id="color"
+                  type="text"
+                  placeholder="enter color of produt"
+                  name="color"
+                  value={productData.color}
+                  onChange={(e) => handleVariantChange(e, index)}
+                />
+              </div>
+              <div className="product-input-div">
+                <label htmlFor="price">Price</label>
+                <input
+                  id="price"
+                  type="number"
+                  placeholder="set price for product"
+                  name="price"
+                  value={productData.price}
+                  onChange={(e) => handleVariantChange(e, index)}
+                  min={1}
+                />
+              </div>
+              <div className="product-input-div">
+                <label htmlFor="stock">Stock</label>
+                <input
+                  id="stock"
+                  type="number"
+                  placeholder="set product stock"
+                  name="stock"
+                  value={productData.stock}
+                  onChange={(e) => handleVariantChange(e, index)}
+                  min={1}
+                />
+              </div>
             </form>
           </div>
         ))}
@@ -189,6 +226,8 @@ const SellProduct = ({
           >
             Add More Variant
           </button>
+
+          <button onClick={() => setCount(count - 1)}>delete</button>
           <button className="submit-btn" onClick={() => setShowPopup(true)}>
             Create Product
           </button>

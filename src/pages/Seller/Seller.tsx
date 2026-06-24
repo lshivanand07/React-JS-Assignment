@@ -2,7 +2,7 @@ import './Seller.css';
 import sellerHub from '../../assets/sellerHub.png';
 import Button from '../../components/Buttons/Button';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import withErrorHandling from '../../hoc/withErrorHandling';
 import withLoader from '../../hoc/withLoader';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
@@ -61,27 +61,27 @@ function SellerContainer() {
     return storedToken.token && storedToken.role === 'seller';
   });
 
-  function SellerLogin() {
+  const SellerLogin = useCallback(() => {
     console.log('Logintoken', token);
     if (!token?.token || token?.role !== 'seller') {
       return navigate('/login');
     }
     setAthenticate(true);
-  }
+  }, [navigate, navigate]);
 
-  function SellerSignUp() {
+  const SellerSignUp = useCallback(() => {
     if (!token?.token || token?.role !== 'seller') {
       return navigate('/signup');
     } else {
       return navigate('/seller-account/sell-new-product');
     }
-  }
+  }, [navigate, token]);
 
-  function sellerLogout() {
+  const sellerLogout = useCallback(() => {
     localStorage.removeItem('userToken');
     setAthenticate(false);
     setToken(null);
-  }
+  }, []);
 
   return (
     <EnhancedSeller

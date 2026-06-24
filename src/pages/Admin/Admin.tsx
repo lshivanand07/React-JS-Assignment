@@ -5,13 +5,13 @@ import logo from '../../assets/logo.png';
 import Button from '../../components/Buttons/Button';
 import './Admin.css';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { fetchAllUser } from '../../services/userApi';
+import { useEffect, useState, useCallback } from 'react';
+import { fetchAllUser, deleteUser } from '../../services/userApi';
 import DataTable from 'react-data-table-component';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
-import { fetchProductDetails } from '../../services/ProductApi';
+import { fetchProductDetails, deleteProduct } from '../../services/ProductApi';
 import { fetchFlipkartRecords } from '../../services/dashboardApi';
-import { allOrders } from '../../services/ordersApi';
+import { allOrders, editOrderStatus } from '../../services/ordersApi';
 
 const customStyles = {
   headRow: {
@@ -34,6 +34,9 @@ interface AdminProps {
   dashboardRecord: any;
   filterData: any[];
   columns: any[];
+  message: string;
+  setShowPopup: (value: boolean) => void;
+  showPopup: boolean;
 }
 
 function AdminPage({
@@ -47,7 +50,12 @@ function AdminPage({
   showDashboard,
   filterData,
   columns,
+  message,
+  setShowPopup,
+  showPopup,
 }: Readonly<AdminProps>) {
+  const navigate = useNavigate();
+
   return (
     <>
       <header>
@@ -92,32 +100,44 @@ function AdminPage({
             <Breadcrumbs />
 
             {showDashboard && (
-              <div className="admin-dashboard">
-                <div className="flipkart-record">
-                  <h2>Total Revenue</h2>
-                  <h3>₹: {dashboardRecord?.totalRevenue}</h3>
+              <>
+                <div className="add-product-user-btn">
+                  <Button
+                    text="Add Product"
+                    onClick={() => navigate('/admin/add-product')}
+                  ></Button>
+                  <Button
+                    text="Add User"
+                    onClick={() => navigate('/admin/add-user')}
+                  ></Button>
                 </div>
-                <div className="flipkart-record">
-                  <h2>Total Products</h2>
-                  <h3>{dashboardRecord?.totalProducts}</h3>
+                <div className="admin-dashboard">
+                  <div className="flipkart-record">
+                    <h2>Total Revenue</h2>
+                    <h3>₹: {dashboardRecord?.totalRevenue}</h3>
+                  </div>
+                  <div className="flipkart-record">
+                    <h2>Total Products</h2>
+                    <h3>{dashboardRecord?.totalProducts}</h3>
+                  </div>
+                  <div className="flipkart-record">
+                    <h2>Total Orders</h2>
+                    <h3>{dashboardRecord?.totalOrders}</h3>
+                  </div>
+                  <div className="flipkart-record">
+                    <h2>Total Users</h2>
+                    <h3>{dashboardRecord?.totalUsers}</h3>
+                  </div>
+                  <div className="flipkart-record">
+                    <h2>Total Customers</h2>
+                    <h3>{dashboardRecord?.totalCustomers}</h3>
+                  </div>
+                  <div className="flipkart-record">
+                    <h2>Total Sellers</h2>
+                    <h3>{dashboardRecord?.totalSellers}</h3>
+                  </div>
                 </div>
-                <div className="flipkart-record">
-                  <h2>Total Orders</h2>
-                  <h3>{dashboardRecord?.totalOrders}</h3>
-                </div>
-                <div className="flipkart-record">
-                  <h2>Total Users</h2>
-                  <h3>{dashboardRecord?.totalUsers}</h3>
-                </div>
-                <div className="flipkart-record">
-                  <h2>Total Customers</h2>
-                  <h3>{dashboardRecord?.totalCustomers}</h3>
-                </div>
-                <div className="flipkart-record">
-                  <h2>Total Sellers</h2>
-                  <h3>{dashboardRecord?.totalSellers}</h3>
-                </div>
-              </div>
+              </>
             )}
 
             {!showDashboard && (
@@ -130,6 +150,7 @@ function AdminPage({
                   />
                 </div>
                 <DataTable
+                  className="data-table"
                   columns={columns}
                   data={filterData}
                   customStyles={customStyles}
@@ -141,6 +162,21 @@ function AdminPage({
               </>
             )}
           </div>
+
+          {showPopup && (
+            <div className="model-overlay">
+              <div className="modal-container">
+                <h4>{message}</h4>
+                <Button
+                  text="Ok"
+                  onClick={() => {
+                    setShowPopup(false);
+                    globalThis.location.reload();
+                  }}
+                ></Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -149,76 +185,6 @@ function AdminPage({
 
 const EnhancedAdmin = withLoader(withErrorHandling(AdminPage));
 
-const userColumns = [
-  { name: 'ID', selector: (row: any) => row.User_id, sortable: true },
-  {
-    name: 'Name',
-    selector: (row: any) => row.user_name?.toLowerCase(),
-    sortable: true,
-  },
-  { name: 'Email', selector: (row: any) => row.email, sortable: true },
-  { name: 'DOB', selector: (row: any) => row.dob, sortable: true },
-  { name: 'Age', selector: (row: any) => row.age, sortable: true },
-  { name: 'Phone', selector: (row: any) => row.phone },
-  { name: 'Role', selector: (row: any) => row.role },
-];
-
-const productColumns = [
-  { name: 'ID', selector: (row: any) => row.product_id, sortable: true },
-  {
-    name: 'image',
-    selector: (row: any) => (
-      <img src={row.image_url} alt={row.product_name} width="50" height="50" />
-    ),
-  },
-  {
-    name: 'Name',
-    selector: (row: any) => row.product_name?.toLowerCase(),
-    sortable: true,
-  },
-  {
-    name: 'Description',
-    selector: (row: any) => row.description,
-    width: '200px',
-  },
-  {
-    name: 'Discount %',
-    selector: (row: any) =>
-      row.discount_percentage ? row.discount_percentage : '0.00',
-  },
-  { name: 'Stock', selector: (row: any) => row.stock, sortable: true },
-];
-
-const orderColumns = [
-  { name: 'ID', selector: (row: any) => row.order_id, sortable: true },
-  {
-    name: 'User',
-    selector: (row: any) => row.user_name?.toLowerCase(),
-    sortable: true,
-  },
-  {
-    name: 'Product',
-    selector: (row: any) => row.product_name?.toLowerCase(),
-    sortable: true,
-  },
-  { name: 'quantity', selector: (row: any) => row.quantity, sortable: true },
-  {
-    name: 'order date',
-    selector: (row: any) => row.order_date?.toLowerCase(),
-    sortable: true,
-  },
-  {
-    name: 'Status',
-    selector: (row: any) => row.order_status?.toLowerCase(),
-    sortable: true,
-  },
-  {
-    name: 'total_amount',
-    selector: (row: any) => row.total_amount,
-    sortable: true,
-  },
-];
-
 function AdminContainer() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -226,27 +192,32 @@ function AdminContainer() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [filterData, setFilterData] = useState<any[]>([]);
-  const [columns, setColumns] = useState(userColumns);
+  const [columns, setColumns] = useState<any[]>([]);
   const [showDashboard, setShowDashboard] = useState(false);
   const [dashboardRecord, setDashboardRecord] = useState<any>(null);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [message, setMessage] = useState<any>(null);
 
-  function adminLogout() {
+  const adminLogout = useCallback(() => {
     localStorage.removeItem('userToken');
     navigate('/login');
-  }
+  }, []);
 
-  function filterRecord(searchValue: string) {
-    const newRecord = data.filter((record: any) =>
-      Object.values(record).some(
-        (value) =>
-          typeof value !== 'object' &&
-          String(value).toLowerCase().includes(searchValue.toLowerCase())
-      )
-    );
-    setFilterData(newRecord);
-  }
+  const filterRecord = useCallback(
+    (searchValue: string) => {
+      const newRecord = data.filter((record: any) =>
+        Object.values(record).some(
+          (value) =>
+            typeof value !== 'object' &&
+            String(value).toLowerCase().includes(searchValue.toLowerCase())
+        )
+      );
+      setFilterData(newRecord);
+    },
+    [data]
+  );
 
-  async function getUsersByRole(role?: string) {
+  const getUsersByRole = useCallback(async (role?: string) => {
     try {
       setLoading(true);
       const users = await fetchAllUser();
@@ -266,16 +237,124 @@ function AdminContainer() {
       setData(filteredUsers);
       setFilterData(filteredUsers);
       navigate(`/admin/${role}`);
-      setColumns(userColumns);
+      setColumns(userSellerColumns);
       setShowDashboard(false);
     } catch (error) {
       setServerError(error);
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  async function getProducts() {
+  const deleteOneUser = useCallback(async (user_id: number) => {
+    try {
+      setLoading(true);
+      const data = await deleteUser(user_id);
+      setMessage(data.message);
+      setShowPopup(true);
+    } catch (error) {
+      setServerError(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const userColumns = [
+    { name: 'ID', selector: (row: any) => row.User_id, sortable: true },
+    {
+      name: 'Name',
+      selector: (row: any) => row.user_name?.toLowerCase(),
+      sortable: true,
+    },
+    { name: 'Email', selector: (row: any) => row.email, sortable: true },
+    { name: 'DOB', selector: (row: any) => row.dob, sortable: true },
+    { name: 'Age', selector: (row: any) => row.age, sortable: true },
+    { name: 'Phone', selector: (row: any) => row.phone },
+    { name: 'Role', selector: (row: any) => row.role },
+    {
+      name: 'Action',
+      cell: (row: any) => (
+        <div className="user-action-btn">
+          <Button text="Delete" onClick={() => deleteOneUser(row.User_id)} />
+        </div>
+      ),
+    },
+  ];
+
+  const userSellerColumns = [
+    { name: 'ID', selector: (row: any) => row.User_id, sortable: true },
+    {
+      name: 'Name',
+      selector: (row: any) => row.user_name?.toLowerCase(),
+      sortable: true,
+    },
+    { name: 'Email', selector: (row: any) => row.email, sortable: true },
+    { name: 'DOB', selector: (row: any) => row.dob, sortable: true },
+    { name: 'Age', selector: (row: any) => row.age, sortable: true },
+    { name: 'Phone', selector: (row: any) => row.phone },
+    { name: 'Role', selector: (row: any) => row.role },
+    {
+      name: 'Delete',
+      cell: (row: any) => (
+        <Button text="Delete" onClick={() => deleteOneUser(row.User_id)} />
+      ),
+    },
+  ];
+
+  const deleteOneProduct = useCallback(async (productID: number) => {
+    try {
+      setLoading(true);
+      const data = await deleteProduct(productID);
+      setMessage(data.message);
+      setShowPopup(true);
+    } catch (error) {
+      setServerError(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const productColumns = [
+    { name: 'ID', selector: (row: any) => row.product_id, sortable: true },
+    {
+      name: 'image',
+      selector: (row: any) => (
+        <img
+          src={row.image_url}
+          alt={row.product_name}
+          width="50"
+          height="50"
+        />
+      ),
+    },
+    {
+      name: 'Name',
+      selector: (row: any) => row.product_name?.toLowerCase(),
+      sortable: true,
+    },
+    {
+      name: 'Description',
+      selector: (row: any) => row.description,
+      width: '200px',
+    },
+    {
+      name: 'Discount %',
+      selector: (row: any) =>
+        row.discount_percentage ? row.discount_percentage : '0.00',
+    },
+    { name: 'Stock', selector: (row: any) => row.stock, sortable: true },
+    {
+      name: 'action',
+      cell: (row: any) => (
+        <Button
+          text="Delete"
+          onClick={() => deleteOneProduct(row.product_id)}
+        ></Button>
+      ),
+    },
+  ];
+
+  const getProducts = useCallback(async () => {
     try {
       setLoading(true);
       const products = await fetchProductDetails();
@@ -290,9 +369,9 @@ function AdminContainer() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [navigate, productColumns]);
 
-  async function getDashboardRecord() {
+  const getDashboardRecord = useCallback(async () => {
     try {
       setLoading(true);
       const data = await fetchFlipkartRecords();
@@ -305,9 +384,74 @@ function AdminContainer() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [navigate]);
 
-  async function getOrders() {
+  const editUserOrder = useCallback(async (payload: any) => {
+    try {
+      setLoading(true);
+      const data = await editOrderStatus(payload);
+      setMessage(data.message);
+      setShowPopup(true);
+    } catch (error) {
+      setServerError(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const orderColumns = [
+    { name: 'ID', selector: (row: any) => row.order_id, sortable: true },
+    {
+      name: 'User',
+      selector: (row: any) => row.user_name?.toLowerCase(),
+      sortable: true,
+    },
+    {
+      name: 'Product',
+      selector: (row: any) => row.product_name?.toLowerCase(),
+      sortable: true,
+    },
+    { name: 'quantity', selector: (row: any) => row.quantity, sortable: true },
+    {
+      name: 'order date',
+      selector: (row: any) => row.order_date?.toLowerCase(),
+      sortable: true,
+    },
+    {
+      name: 'Status',
+      selector: (row: any) => row.order_status?.toLowerCase(),
+      sortable: true,
+    },
+    {
+      name: 'total_amount',
+      selector: (row: any) => row.total_amount,
+      sortable: true,
+    },
+    {
+      name: 'Action',
+      cell: (row: any) => (
+        <select
+          defaultValue=""
+          onChange={(e) =>
+            editUserOrder({
+              user_id: row.user_id,
+              order_id: row.order_id,
+              order_item: row.order_item_id,
+              order_status: e.target.value,
+            })
+          }
+        >
+          <option value="" disabled>
+            Order Status
+          </option>
+          <option value="confirmed">Confirmed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      ),
+    },
+  ];
+
+  const getOrders = useCallback(async () => {
     try {
       setLoading(true);
       const orders = await allOrders();
@@ -322,7 +466,7 @@ function AdminContainer() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [navigate, orderColumns]);
 
   useEffect(() => {
     setShowDashboard(true);
@@ -343,7 +487,8 @@ function AdminContainer() {
     }
     if (
       location.pathname === '/admin/dashboard' ||
-      location.pathname === '/admin'
+      location.pathname === '/admin' ||
+      location.pathname === '/Admin'
     ) {
       getDashboardRecord();
     }
@@ -363,6 +508,9 @@ function AdminContainer() {
       showDashboard={showDashboard}
       filterData={filterData}
       columns={columns}
+      message={message}
+      setShowPopup={setShowPopup}
+      showPopup={showPopup}
     />
   );
 }

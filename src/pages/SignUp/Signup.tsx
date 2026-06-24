@@ -56,9 +56,6 @@ function Signup({
         </div>
         <form className="signup-div">
           <h1 className="sign-up-heading">Sign Up</h1>
-          <p>
-            Already have an account? <a href="/login">Login</a>
-          </p>
           <label htmlFor="user_name">Name*: </label>
           <input
             type="text"
@@ -89,7 +86,7 @@ function Signup({
               checked={signUpData.role === 'Customer'}
               onChange={handleChangeEvent}
             />
-            <label htmlFor="Customer">Custome</label>
+            <label htmlFor="Customer">Customer</label>
             <input
               id="Seller"
               type="radio"
@@ -101,7 +98,7 @@ function Signup({
             <label htmlFor="Seller">Seller</label>
           </div>
           <p className="error">{message?.role}</p>
-          <label htmlFor="user_password">password*: </label>
+          <label htmlFor="user_password">Password*: </label>
           <input
             type="text"
             id="user_password"
@@ -112,6 +109,9 @@ function Signup({
           />
           <p className="error">{message?.password}</p>
           <Button text="Sign Up" onClick={userRegistration}></Button>
+          <p>
+            Already have an account? <a href="/login">Login</a>
+          </p>
         </form>
 
         {showPopup && (

@@ -5,13 +5,17 @@ const Breadcrumbs = () => {
   const { pathname } = useLocation();
   const pathnames = pathname.split('/').filter(Boolean);
 
+  const result = pathnames.map(
+    (value) => value.charAt(0).toUpperCase() + value.slice(1)
+  );
+
   return (
     <div className="breadcrumbs">
       <Link to="/">Home</Link>
-      {pathnames.map((name, index) => {
-        const breadcrumbsPath = '/' + pathnames.slice(0, index + 1).join('/');
+      {result.map((name, index) => {
+        const breadcrumbsPath = '/' + result.slice(0, index + 1).join('/');
 
-        const isLastIndex = index === pathnames.length - 1;
+        const isLastIndex = index === result.length - 1;
 
         return (
           <span key={breadcrumbsPath}>
