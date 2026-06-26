@@ -154,7 +154,7 @@ const SellProduct = ({
         <h3>Variants</h3>
 
         {Array.from({ length: count }).map((_, index: number) => (
-          <div>
+          <>
             <p>varient {index + 1}</p>
             <form className="product-variants">
               <div className="product-input-div">
@@ -204,7 +204,7 @@ const SellProduct = ({
                 />
               </div>
             </form>
-          </div>
+          </>
         ))}
         <div className="button-group">
           <button
@@ -254,7 +254,7 @@ const SellProduct = ({
                       onClick={() => newProductData(productData)}
                     ></Button>
                     <Button
-                      text="cancel"
+                      text="Cancel"
                       onClick={() => setShowPopup(false)}
                     ></Button>
                   </div>

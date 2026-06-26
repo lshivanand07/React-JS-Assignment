@@ -12,18 +12,6 @@ vi.mock('../src/services/ProductApi', () => ({
   fetchProductDetails: vi.fn(),
 }));
 
-// vi.mock('../src/components/Navbar/Navbar', () => ({
-//   default: () => <div>Navbar</div>,
-// }));
-
-// vi.mock('../src/components/Footer/Footer', () => ({
-//   default: () => <div>Footer</div>,
-// }));
-
-// vi.mock('../src/components/MobileMenu/MobileMenu', () => ({
-//   default: () => <div>Mobile Menu</div>,
-// }));
-
 vi.mock('../src/components/Buttons/Button', () => ({
   default: ({ text, onClick }: { text: string; onClick: () => void }) => (
     <button onClick={onClick}>{text}</button>

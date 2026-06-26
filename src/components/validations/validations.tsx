@@ -19,7 +19,7 @@ const validateSignup = (signUpData: ValidationSignUp): ValidationErrors => {
     errors.user_name = 'Name is required';
   }
 
-  const emailPattern = /([a-z]+)(\d*)(@)([a-z]+)(\.)([a-z]+)/;
+  const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 
   if (signUpData.email === '') {
     errors.email = 'Email field is mandatory';
@@ -31,7 +31,7 @@ const validateSignup = (signUpData: ValidationSignUp): ValidationErrors => {
     errors.role = 'please select user type';
   }
 
-  const passwordPattern = /([A-Z]+)([a-z0-9]+)([@$&]?)([a-z0-9]+)/;
+  const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z0-9])(?=.*[@$&])[A-Za-z0-9@$&]{8,}$/;
   if (signUpData.password === '') {
     errors.password = 'Password field is mandatory*';
   } else if (signUpData.password.length < 8) {

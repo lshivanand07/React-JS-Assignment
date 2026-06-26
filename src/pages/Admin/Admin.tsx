@@ -5,7 +5,7 @@ import logo from '../../assets/logo.png';
 import Button from '../../components/Buttons/Button';
 import './Admin.css';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { fetchAllUser, deleteUser } from '../../services/userApi';
 import DataTable from 'react-data-table-component';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
@@ -185,6 +185,121 @@ function AdminPage({
 
 const EnhancedAdmin = withLoader(withErrorHandling(AdminPage));
 
+const getUserColumns = (deleteOneUser: (id: number) => void) => [
+  { name: 'ID', selector: (row: any) => row.User_id, sortable: true },
+  {
+    name: 'Name',
+    selector: (row: any) => row.user_name?.toLowerCase(),
+    sortable: true,
+  },
+  { name: 'Email', selector: (row: any) => row.email, sortable: true },
+  { name: 'DOB', selector: (row: any) => row.dob, sortable: true },
+  { name: 'Age', selector: (row: any) => row.age, sortable: true },
+  { name: 'Phone', selector: (row: any) => row.phone },
+  { name: 'Role', selector: (row: any) => row.role },
+  {
+    name: 'Action',
+    cell: (row: any) => (
+      <div className="user-action-btn">
+        <Button text="Delete" onClick={() => deleteOneUser(row.User_id)} />
+      </div>
+    ),
+  },
+];
+
+const getProductColumns = (deleteOneProduct: (id: number) => void) => [
+  { name: 'ID', selector: (row: any) => row.product_id, sortable: true },
+  {
+    name: 'image',
+    cell: (row: any) => (
+      <img
+        src={row.image_url}
+        alt={row.product_name}
+        width="50"
+        height="50"
+      />
+    ),
+  },
+  {
+    name: 'Name',
+    selector: (row: any) => row.product_name?.toLowerCase(),
+    sortable: true,
+  },
+  {
+    name: 'Description',
+    selector: (row: any) => row.description,
+    width: '200px',
+  },
+  {
+    name: 'Discount %',
+    selector: (row: any) =>
+      row.discount_percentage ? row.discount_percentage : '0.00',
+  },
+  { name: 'Stock', selector: (row: any) => row.stock, sortable: true },
+  {
+    name: 'action',
+    cell: (row: any) => (
+      <Button
+        text="Delete"
+        onClick={() => deleteOneProduct(row.product_id)}
+      ></Button>
+    ),
+  },
+];
+
+const getOrderColumns = (editUserOrder: (payload: any) => void) => [
+  { name: 'ID', selector: (row: any) => row.order_id, sortable: true },
+  {
+    name: 'User',
+    selector: (row: any) => row.user_name?.toLowerCase(),
+    sortable: true,
+  },
+  {
+    name: 'Product',
+    selector: (row: any) => row.product_name?.toLowerCase(),
+    sortable: true,
+  },
+  { name: 'quantity', selector: (row: any) => row.quantity, sortable: true },
+  {
+    name: 'order date',
+    selector: (row: any) => row.order_date?.toLowerCase(),
+    sortable: true,
+  },
+  {
+    name: 'Status',
+    selector: (row: any) => row.order_status?.toLowerCase(),
+    sortable: true,
+  },
+  {
+    name: 'total_amount',
+    selector: (row: any) => row.total_amount,
+    sortable: true,
+  },
+  {
+    name: 'Action',
+    cell: (row: any) => (
+      <select
+        defaultValue=""
+        onChange={(e) =>
+          editUserOrder({
+            user_id: row.user_id,
+            order_id: row.order_id,
+            order_item: row.order_item_id,
+            order_status: e.target.value,
+          })
+        }
+      >
+        <option value="" disabled>
+          Order Status
+        </option>
+        <option value="confirmed">Confirmed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    ),
+  },
+];
+
+
 function AdminContainer() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -201,14 +316,17 @@ function AdminContainer() {
   const adminLogout = useCallback(() => {
     localStorage.removeItem('userToken');
     navigate('/login');
-  }, []);
+  }, [navigate]);
 
   const filterRecord = useCallback(
     (searchValue: string) => {
       const newRecord = data.filter((record: any) =>
         Object.values(record).some(
           (value) =>
-            typeof value !== 'object' &&
+      value !== null &&
+      (typeof value === 'string' ||
+  typeof value === 'number' ||
+  typeof value === 'boolean') &&
             String(value).toLowerCase().includes(searchValue.toLowerCase())
         )
       );
@@ -216,35 +334,6 @@ function AdminContainer() {
     },
     [data]
   );
-
-  const getUsersByRole = useCallback(async (role?: string) => {
-    try {
-      setLoading(true);
-      const users = await fetchAllUser();
-
-      if (!role) {
-        navigate('/admin/users');
-        setData(users[0]);
-        setFilterData(users[0]);
-        setColumns(userColumns);
-        setShowDashboard(false);
-        return;
-      }
-
-      const filteredUsers = users[0]?.filter(
-        (users: any) => users.role === role
-      );
-      setData(filteredUsers);
-      setFilterData(filteredUsers);
-      navigate(`/admin/${role}`);
-      setColumns(userSellerColumns);
-      setShowDashboard(false);
-    } catch (error) {
-      setServerError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   const deleteOneUser = useCallback(async (user_id: number) => {
     try {
@@ -259,48 +348,6 @@ function AdminContainer() {
     }
   }, []);
 
-  const userColumns = [
-    { name: 'ID', selector: (row: any) => row.User_id, sortable: true },
-    {
-      name: 'Name',
-      selector: (row: any) => row.user_name?.toLowerCase(),
-      sortable: true,
-    },
-    { name: 'Email', selector: (row: any) => row.email, sortable: true },
-    { name: 'DOB', selector: (row: any) => row.dob, sortable: true },
-    { name: 'Age', selector: (row: any) => row.age, sortable: true },
-    { name: 'Phone', selector: (row: any) => row.phone },
-    { name: 'Role', selector: (row: any) => row.role },
-    {
-      name: 'Action',
-      cell: (row: any) => (
-        <div className="user-action-btn">
-          <Button text="Delete" onClick={() => deleteOneUser(row.User_id)} />
-        </div>
-      ),
-    },
-  ];
-
-  const userSellerColumns = [
-    { name: 'ID', selector: (row: any) => row.User_id, sortable: true },
-    {
-      name: 'Name',
-      selector: (row: any) => row.user_name?.toLowerCase(),
-      sortable: true,
-    },
-    { name: 'Email', selector: (row: any) => row.email, sortable: true },
-    { name: 'DOB', selector: (row: any) => row.dob, sortable: true },
-    { name: 'Age', selector: (row: any) => row.age, sortable: true },
-    { name: 'Phone', selector: (row: any) => row.phone },
-    { name: 'Role', selector: (row: any) => row.role },
-    {
-      name: 'Delete',
-      cell: (row: any) => (
-        <Button text="Delete" onClick={() => deleteOneUser(row.User_id)} />
-      ),
-    },
-  ];
-
   const deleteOneProduct = useCallback(async (productID: number) => {
     try {
       setLoading(true);
@@ -313,78 +360,6 @@ function AdminContainer() {
       setLoading(false);
     }
   }, []);
-
-  const productColumns = [
-    { name: 'ID', selector: (row: any) => row.product_id, sortable: true },
-    {
-      name: 'image',
-      selector: (row: any) => (
-        <img
-          src={row.image_url}
-          alt={row.product_name}
-          width="50"
-          height="50"
-        />
-      ),
-    },
-    {
-      name: 'Name',
-      selector: (row: any) => row.product_name?.toLowerCase(),
-      sortable: true,
-    },
-    {
-      name: 'Description',
-      selector: (row: any) => row.description,
-      width: '200px',
-    },
-    {
-      name: 'Discount %',
-      selector: (row: any) =>
-        row.discount_percentage ? row.discount_percentage : '0.00',
-    },
-    { name: 'Stock', selector: (row: any) => row.stock, sortable: true },
-    {
-      name: 'action',
-      cell: (row: any) => (
-        <Button
-          text="Delete"
-          onClick={() => deleteOneProduct(row.product_id)}
-        ></Button>
-      ),
-    },
-  ];
-
-  const getProducts = useCallback(async () => {
-    try {
-      setLoading(true);
-      const products = await fetchProductDetails();
-      console.log(products);
-      setData(products);
-      setFilterData(products);
-      setColumns(productColumns);
-      navigate('/admin/products');
-      setShowDashboard(false);
-    } catch (error) {
-      setServerError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, productColumns]);
-
-  const getDashboardRecord = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await fetchFlipkartRecords();
-      console.log('data ', data);
-      setDashboardRecord(data);
-      setShowDashboard(true);
-      navigate('/admin/dashboard');
-    } catch (error) {
-      setServerError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
 
   const editUserOrder = useCallback(async (payload: any) => {
     try {
@@ -399,100 +374,104 @@ function AdminContainer() {
     }
   }, []);
 
-  const orderColumns = [
-    { name: 'ID', selector: (row: any) => row.order_id, sortable: true },
-    {
-      name: 'User',
-      selector: (row: any) => row.user_name?.toLowerCase(),
-      sortable: true,
-    },
-    {
-      name: 'Product',
-      selector: (row: any) => row.product_name?.toLowerCase(),
-      sortable: true,
-    },
-    { name: 'quantity', selector: (row: any) => row.quantity, sortable: true },
-    {
-      name: 'order date',
-      selector: (row: any) => row.order_date?.toLowerCase(),
-      sortable: true,
-    },
-    {
-      name: 'Status',
-      selector: (row: any) => row.order_status?.toLowerCase(),
-      sortable: true,
-    },
-    {
-      name: 'total_amount',
-      selector: (row: any) => row.total_amount,
-      sortable: true,
-    },
-    {
-      name: 'Action',
-      cell: (row: any) => (
-        <select
-          defaultValue=""
-          onChange={(e) =>
-            editUserOrder({
-              user_id: row.user_id,
-              order_id: row.order_id,
-              order_item: row.order_item_id,
-              order_status: e.target.value,
-            })
-          }
-        >
-          <option value="" disabled>
-            Order Status
-          </option>
-          <option value="confirmed">Confirmed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      ),
-    },
-  ];
+  const userColumnsMapped = useMemo(() => getUserColumns(deleteOneUser), [deleteOneUser]);
+  const productColumnsMapped = useMemo(() => getProductColumns(deleteOneProduct), [deleteOneProduct]);
+  const orderColumnsMapped = useMemo(() => getOrderColumns(editUserOrder), [editUserOrder]);
+
+  const getUsersByRole = useCallback(async (role?: string) => {
+    try {
+      setLoading(true);
+      const users = await fetchAllUser();
+
+      if (!role) {
+        navigate('/admin/users');
+        setData(users[0]);
+        setFilterData(users[0]);
+        setColumns(userColumnsMapped);
+        setShowDashboard(false);
+        return;
+      }
+
+      const filteredUsers = users[0]?.filter(
+        (users: any) => users.role === role
+      );
+      setData(filteredUsers);
+      setFilterData(filteredUsers);
+      navigate(`/admin/${role}`);
+      setColumns(userColumnsMapped);
+      setShowDashboard(false);
+    } catch (error) {
+      setServerError(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, userColumnsMapped]);
+
+  const getProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const products = await fetchProductDetails();
+      setData(products);
+      setFilterData(products);
+      setColumns(productColumnsMapped);
+      navigate('/admin/products');
+      setShowDashboard(false);
+    } catch (error) {
+      setServerError(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, productColumnsMapped]);
+
+  const getDashboardRecord = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await fetchFlipkartRecords();
+      setDashboardRecord(data);
+      setShowDashboard(true);
+      navigate('/admin/dashboard');
+    } catch (error) {
+      setServerError(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate]);
 
   const getOrders = useCallback(async () => {
     try {
       setLoading(true);
       const orders = await allOrders();
-      console.log('data ', orders);
       setData(orders);
       setFilterData(orders);
       setShowDashboard(false);
-      setColumns(orderColumns);
+      setColumns(orderColumnsMapped);
       navigate('/admin/orders');
     } catch (error) {
       setServerError(error);
     } finally {
       setLoading(false);
     }
-  }, [navigate, orderColumns]);
+  }, [navigate, orderColumnsMapped]);
 
   useEffect(() => {
-    setShowDashboard(true);
     if (location.pathname === '/admin/users') {
       getUsersByRole('');
-    }
-    if (location.pathname === '/admin/customer') {
+    } else if (location.pathname === '/admin/customer') {
       getUsersByRole('customer');
-    }
-    if (location.pathname === '/admin/seller') {
+    } else if (location.pathname === '/admin/seller') {
       getUsersByRole('seller');
-    }
-    if (location.pathname === '/admin/products') {
+    } else if (location.pathname === '/admin/products') {
       getProducts();
-    }
-    if (location.pathname === '/admin/orders') {
+    } else if (location.pathname === '/admin/orders') {
       getOrders();
-    }
-    if (
+    } else if (
       location.pathname === '/admin/dashboard' ||
       location.pathname === '/admin' ||
       location.pathname === '/Admin'
     ) {
       getDashboardRecord();
     }
-  }, [location.pathname]);
+  }, [location.pathname, getUsersByRole, getProducts, getOrders, getDashboardRecord]);
 
   return (
     <EnhancedAdmin

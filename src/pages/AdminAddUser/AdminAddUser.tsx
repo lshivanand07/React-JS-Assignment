@@ -47,7 +47,7 @@ function AddNewUser({
   };
 
   return (
-    <>
+    
       <div className="container">
         <Breadcrumbs />
         <h1 className="add-user-heading">Add User</h1>
@@ -186,7 +186,6 @@ function AddNewUser({
           </div>
         )}
       </div>
-    </>
   );
 }
 
