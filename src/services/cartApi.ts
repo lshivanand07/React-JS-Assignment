@@ -1,47 +1,31 @@
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+import api from './api';
 
 export async function fetchCartDetails() {
-  const token = localStorage.getItem('token');
-
-  const response = await fetch(`${BASE_URL}/get-user-cart`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-    const data = await response.json();
-
-     if (!response.ok) {
-      throw new Error(`${response.status} ${data.message}`);
-    }
-
-  return data;
+  const response = await api.get('/get-user-cart');
+  return response.data;
 }
 
-export async function addCartItems(product_id:number, quantity:number, variant_id:number) {
-    const token = localStorage.getItem('token');
+interface SelectedItem {
+  product_id: number;
+  variant_id: number;
+  quantity: number;
+}
 
-  const response = await fetch(`${BASE_URL}/post-user-cart`, {
-    method: 'POST',
-   headers: {
-        'Content-Type': 'application/json',
-         Authorization: `Bearer ${token}`
-         
-      },
-    body:JSON.stringify({
-        product_id,
-        quantity,
-        variant_id
-    })
-  });
+export async function addCartItems(payload: SelectedItem) {
+  const response = await api.post('/post-user-cart', payload);
+  return response.data;
+}
 
-    const data = await response.json();
+interface DeleteCartItemByproductID {
+  productID: number;
+  variantID: number;
+}
 
-     if (!response.ok) {
-      throw new Error(data.message);
-    }
+export async function deleteCartItem(selectedItem: DeleteCartItemByproductID) {
+  console.log('payload', selectedItem);
 
-  return data;
+  const response = await api.delete(
+    `/delete-cart-product/${selectedItem.productID}/${selectedItem.variantID}`
+  );
+  return response.data;
 }

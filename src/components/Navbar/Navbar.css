@@ -1,26 +1,26 @@
-header{
-     background:rgb(84, 84, 246);
+header {
+  background: rgb(84, 84, 246);
 }
-.navbar{
-    display:flex;
-    flex-wrap: wrap;
-    align-items:center;
-    justify-content: space-between; 
-    padding: 5px 0px;
-}
-
-.logo{
-    max-width: 100px;
-    height: auto;
+.navbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0px;
 }
 
-.logo img{
+.logo {
+  max-width: 80px;
+  height: auto;
+}
+
+.logo img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-.nav-search-bar{
+.nav-search-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -30,14 +30,12 @@ header{
   padding: 0px 10px;
 }
 
-
-.navbar input{
-    padding:10px;
-    border:none;
-    outline: none;
-    border-radius:4px;
+.navbar input {
+  padding: 10px;
+  border: none;
+  outline: none;
+  border-radius: 4px;
 }
-
 
 .account-menu {
   position: relative;
@@ -65,13 +63,29 @@ header{
   border-radius: 10px;
 }
 
-.dropdown p {
+.dropdown a {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: black;
   margin: 0;
   padding: 10px;
   cursor: pointer;
 }
 
-.dropdown p:hover {
+.dropdown a:hover {
   background-color: #f5f5f5;
 }
 
+@media screen and (max-width: 768px) {
+  .logout-button {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .account-menu,
+  .cart-button {
+    display: none;
+  }
+}

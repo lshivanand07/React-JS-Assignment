@@ -1,17 +1,11 @@
-const BASE_URL = import.meta.env.VITE_BASE_URL
+import api from './api';
 
-export async function checkoutOrder(payment_method_name:string) {
-   const  token  = localStorage.getItem("token")
-   const response =  await fetch(`${BASE_URL}/checkout-orderItem`,{
-        method:'POST',
-        headers:{
-            'Content-Type' : 'application/json',
-            'Authorization' : `Bearer ${token}`
-        },
-        body:JSON.stringify({
-            payment_method_name
-        })
-    })
+interface CheckoutData {
+  payment_method_name: string;
+  address_status: string;
+}
 
-    return response.json()
+export async function checkoutOrder(checkoutData: CheckoutData) {
+  const response = await api.post(`/checkout-orderItem`, checkoutData);
+  return response.data;
 }
