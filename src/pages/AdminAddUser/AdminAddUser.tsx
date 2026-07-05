@@ -168,6 +168,7 @@ function AddNewUser({
                 type="number"
                 placeholder="enter password"
                 name="age"
+                min={1}
                 value={createuserData.age}
                 onChange={handleChangeEvent}
               />
