@@ -80,7 +80,6 @@ function MyProfile({
             <Button text="Addresses" onClick={fetchAddressInfo}></Button>
             <Button text="Logout" onClick={handleLogout}></Button>
           </div>
-
           <div className="dashboard-info">
             <Breadcrumbs />
             {activeTab === 'profile' && userData && (

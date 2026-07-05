@@ -21,6 +21,7 @@ interface CartListProps {
   showPopup: boolean;
   setShowPopup: (value: boolean) => void;
   setSelectedItem: ({ productId, variantId }: any) => void;
+
 }
 
 const CartDataList = ({
@@ -149,7 +150,6 @@ const CartDataContainer = () => {
 
   const dispatch = useDispatch();
   const cartItems = useSelector((state: any) => state.cart.cartItem);
-
   const fetchCartItems = async () => {
     try {
       setLoading(true);
