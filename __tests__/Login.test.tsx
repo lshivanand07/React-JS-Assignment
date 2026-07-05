@@ -1,74 +1,191 @@
-import { vi } from 'vitest';
-import fetchLoginDetails from '../src/services/loginApi'
-import { render, screen, fireEvent } from '@testing-library/react';
-import Login from '../src/pages/Login/Login';
-import { BrowserRouter } from 'react-router-dom';
+import {vi} from 'vitest'
+import { MemoryRouter } from 'react-router-dom';
+import LoginContainer from '../src/pages/Login/Login';
+import {render, screen, fireEvent, waitFor} from '@testing-library/react'
+import fetchLoginDetails from '../src/services/loginApi';
 
-describe('Login Page', ()=>{
+const mockNavigate = vi.fn();
 
-    // test_No 01: required fields are testing
-    test('required fields are testing', async()=>{
-      render(
-        <BrowserRouter>
-        <Login/>
-        </BrowserRouter>
-       )
-     const LoginButton = screen.getByText('Login')
-      fireEvent.click(LoginButton)
-        const text = await screen.findByText('Email and Password fields are required')
-        expect(text).toBeInTheDocument()
-    })
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<any>('react-router-dom');
 
-    // test_No 02: renders error component on server error
-  test('renders error component on server error', async () => {
-    globalThis.fetch = vi.fn().mockRejectedValueOnce(
-      new Error('Server Error')
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+vi.mock('../src/services/loginApi', () => ({
+  default: vi.fn(),
+}));
+
+describe('Login page Testing', ()=>{
+
+   test('renders login form', ()=>{
+     render(
+      <MemoryRouter>
+        <LoginContainer />
+      </MemoryRouter>
     );
 
-    render(<Login />);
+    const Login = screen.getByRole('heading', {name:'Login'})
 
-   const emailInput = document.getElementById('email')
-    fireEvent.change(emailInput as HTMLInputElement, {
-      target: { value: 'abc@gmail.com' },
-    });
-    const passwordInput = document.getElementById('password')
-    fireEvent.change(passwordInput as HTMLInputElement, {
-      target: { value: '123' },
+    expect(Login).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter Email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter Password')).toBeInTheDocument();
+   })
+
+      test('updates input values', () => {
+    render(
+      <MemoryRouter>
+        <LoginContainer />
+      </MemoryRouter>
+    );
+
+    const emailInput = screen.getByPlaceholderText('Enter Email');
+    const passwordInput = screen.getByPlaceholderText('Enter Password');
+
+    fireEvent.change(emailInput, {
+      target: { value: 'test@gmail.com' },
     });
 
-    const loginButton = screen.getByText('Login')
-    fireEvent.click(loginButton);
-    const errorElement = await screen.findByTestId("error-component")
-    expect(errorElement).toBeInTheDocument();
+    fireEvent.change(passwordInput, {
+      target: { value: '123456' },
+    });
+
+    expect(emailInput).toHaveValue('test@gmail.com');
+    expect(passwordInput).toHaveValue('123456');
   });
-   
-  // test_No 03: successful login api call
-   test('successful login api call', async () => {
-    globalThis.fetch = vi.fn();
-    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      json: vi.fn().mockResolvedValue({
-        token: 'abc123',
-        message: 'Login Success',
-      }),
+
+    test('shows validation when fields are empty', async () => {
+    render(
+      <MemoryRouter>
+        <LoginContainer />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole('button', {name:'Login'}));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Email fields required')
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Password fields required')
+      ).toBeInTheDocument();
     });
-    const data = await fetchLoginDetails(
-      'shivu@gmail.com',
-      'pass123'
+  });
+
+
+   test('login success', async () => {
+    vi.mocked(fetchLoginDetails).mockResolvedValue({
+      token: 'token123',
+      user_role: 'customer',
+    });
+
+    render(
+      <MemoryRouter>
+        <LoginContainer />
+      </MemoryRouter>
     );
-    expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:3000/api/login',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: 'shivu@gmail.com',
-          password: 'pass123',
-        }),
-      }
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Email'), {
+      target: { value: 'test@gmail.com' },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Password'), {
+      target: { value: '123456' },
+    });
+
+    fireEvent.click(screen.getByRole('button', {name: 'Login'}));
+
+    await waitFor(() => {
+          expect(mockNavigate).toHaveBeenCalledWith('/');
+    })
+  });
+
+
+  test('login success customer', async () => {
+    (fetchLoginDetails as jest.Mock).mockResolvedValue({
+      token: 'token123',
+      user_role: 'customer',
+    });
+
+    render(
+      <MemoryRouter>
+        <LoginContainer />
+      </MemoryRouter>
     );
-    expect(data.token).toBe('abc123');
-    expect(data.message).toBe('Login Success');
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Email'), {
+      target: { value: 'test@gmail.com' },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Password'), {
+      target: { value: '123456' },
+    });
+
+    fireEvent.click(screen.getByRole('button', {name:'Login'}));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    });
+
+    expect(localStorage.getItem('userToken')).toContain('customer');
+  });
+
+  test('login success seller', async () => {
+    (fetchLoginDetails as jest.Mock).mockResolvedValue({
+      token: 'token123',
+      user_role: 'seller',
+    });
+
+    render(
+      <MemoryRouter>
+        <LoginContainer />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Email'), {
+      target: { value: 'seller@gmail.com' },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Password'), {
+      target: { value: '123456' },
+    });
+
+    fireEvent.click(screen.getByRole('button', {name:'Login'}));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/seller-account');
+    });
+  });
+
+  test('login success admin', async () => {
+    (fetchLoginDetails as jest.Mock).mockResolvedValue({
+      token: 'token123',
+      user_role: 'admin',
+    });
+
+    render(
+      <MemoryRouter>
+        <LoginContainer />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Email'), {
+      target: { value: 'admin@gmail.com' },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Password'), {
+      target: { value: '123456' },
+    });
+
+    fireEvent.click(screen.getByRole('button', {name:'Login'}));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/admin');
+    });
   });
 })

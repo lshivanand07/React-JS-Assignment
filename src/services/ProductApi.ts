@@ -1,33 +1,23 @@
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import api from './api';
 
 export async function fetchProductDetails() {
-
-  const response = await fetch(`${BASE_URL}/get-all-products`, {
-    method: 'GET',
-  });
-
-    const data = await response.json();
-
-     if (!response.ok) {
-      throw new Error(data.message);
-    }
-
-  return data;
+  const response = await api.get(`/get-all-products`);
+  return response.data;
 }
 
+export async function fetchProductById(productId: number) {
+  const response = await api.get(`/get-one-products/${productId}`);
+  return response.data;
+}
 
-export async function fetchProductById(productId:number) {
+export async function createProduct(productData: any) {
+  const response = await api.post('/post-product-info', productData);
+  return response.data;
+}
 
-  const response = await fetch(`${BASE_URL}/get-one-products/${productId}`, {
-    method: 'GET',
-  });
-
-    const data = await response.json();
-
-     if (!response.ok) {
-       console.log(`${response.status} ${data.message}`)
-      throw new Error(`${response.status} ${data.message}`);
-    }
-
-  return data;
+export async function deleteProduct(productID: number) {
+  console.log('productID ', productID);
+  const response = await api.delete(`/delete-product/${productID}`);
+  return response.data;
 }

@@ -1,20 +1,35 @@
-const BASE_URl = import.meta.env.VITE_BASE_URL
+import api from './api';
+
+export async function allOrders() {
+  const response = await api.get('/get-all-orders');
+  return response.data;
+}
 
 export async function userOrders() {
-  const  token  = localStorage.getItem("token")
- const response = await fetch(`${BASE_URl}/get-user-orders`,{
-    method:'GET',
-    headers:{
-        'Content-Type' : 'aplication/json',
-        Authorization : `Bearer ${token}`
-    }
-         
-    })
+  const response = await api.get('/get-user-orders');
+  return response.data;
+}
 
-    if(!response.ok){
-       const errorData =  await response.json()
-       throw new Error(`${response.status} ${errorData.message}`)
-    }
+interface Payload {
+  user_id: number;
+  order_id: number;
+  order_item: number;
+  order_status: string;
+}
 
-    return response.json()
+export async function editOrderStatus(payload: Payload) {
+  console.log(
+    payload.user_id,
+    payload.order_id,
+    payload.order_status,
+    payload.order_item
+  );
+  console.log(payload);
+  const response = await api.put(
+    `/edit-user/${payload.user_id}/order/${payload.order_id}/${payload.order_item}`,
+    {
+      order_status: payload.order_status,
+    }
+  );
+  return response.data;
 }

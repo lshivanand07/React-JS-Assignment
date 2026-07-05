@@ -2,5 +2,5 @@ projectKey=React-JS
 serverUrl=http://localhost:9000
 serverVersion=26.4.0.121862
 dashboardUrl=http://localhost:9000/dashboard?id=React-JS
-ceTaskId=eb97fcf2-b090-4d33-b08f-f9b69f4af20b
-ceTaskUrl=http://localhost:9000/api/ce/task?id=eb97fcf2-b090-4d33-b08f-f9b69f4af20b
+ceTaskId=5c52390d-1951-4882-bed7-626017315bb7
+ceTaskUrl=http://localhost:9000/api/ce/task?id=5c52390d-1951-4882-bed7-626017315bb7

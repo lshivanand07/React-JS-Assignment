@@ -1,38 +1,66 @@
-.signup-div{
-    max-width: 400px;
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding: 20px;
-    box-shadow: 0px 0px 10px black;
-    border-radius: 5px;
-    font-size: 18px;
+.signup {
+  background-image: url('../../assets/login.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  padding: 20px;
 }
 
-.signup-div input{
-    border: 1px solid black;
-    padding: 5px;
-    font-size: 16px;
-    border-radius: 5px;
-    margin-bottom: 20px;
+.signup-div {
+  max-width: 400px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 20px;
+  border-radius: 5px;
+  font-size: 18px;
+  backdrop-filter: blur(50px);
 }
 
-.error{
-   font-size: 14px;
-   color: red;
+.sign-up-heading {
+  text-align: center;
+  margin-bottom: 5px;
+  color: blue;
 }
 
+.signup-div input {
+  border: 1px solid black;
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 5px;
+}
 
-@media screen and (max-width: 480px){
-    .signup-div{
-        max-width: 200px;
-        padding: 10px;
-        gap: 3px;
-        font-size: 16px;
-    }
+.user-type {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
 
-    .signup-div input{
-        font-size: 14px;
-    }
+.signup-div .error {
+  font-size: 14px;
+  color: red;
+  margin-bottom: 20px;
+  margin-top: 0px;
+}
+
+@media screen and (max-width: 480px) {
+  .sign-up-heading {
+    margin-top: 0px;
+  }
+  .signup-div {
+    width: 95%;
+    max-width: 280px;
+    padding: 12px;
+  }
+
+  .signup-div input {
+    padding: 8px;
+  }
+
+  .user-type {
+    flex-direction: row;
+    gap: 8px;
+  }
 }

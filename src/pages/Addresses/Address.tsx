@@ -1,142 +1,259 @@
-import Button from "../../components/Buttons/Button"
-import { useState } from "react";
-import { createUserAddress } from "../../services/addressApi";
-import './Address.css'
-import withErrorHandling from "../../hoc/withErrorHandling";
-import withLoader from "../../hoc/withLoader";
-import { useNavigate } from "react-router-dom";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import Button from '../../components/Buttons/Button';
+import { useCallback, useEffect, useState } from 'react';
+import { createUserAddress, editAddress } from '../../services/addressApi';
+import './Address.css';
+import withErrorHandling from '../../hoc/withErrorHandling';
+import withLoader from '../../hoc/withLoader';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 interface AddreessesProps {
-    insertUserAddress : ()=> void; resetForm : () => void
-    country: string ; setCountry: (value: string) => void
-    state: string ;    setState: (value: string) => void
-    district: string ; setDistrict : (value: string) => void
-    city: string ;     setCity : (value: string) => void
-    street: string ;  setStreet : (value: string) => void
-    landmark : string ; setLandmark: (value: string) => void
-    pincode: string ;  setPincode : (value: string) => void
-    addressType: string ; setAddressType : (value: string) => void
+  insertUserAddress: () => void;
+  resetForm: () => void;
+  message: string;
+  showPopup: boolean;
+  setShowPopup: (value: boolean) => void;
+  address: {
+    country: string;
+    state: string;
+    districts: string;
+    city: string;
+    street: string;
+    landmark: string;
+    pincode: string;
+    user_address_status: string;
+  };
+  setAddress: (value: any) => void;
 }
 
-const Addresses = ({insertUserAddress, resetForm, country, setCountry, state, setState, district, setDistrict, city, setCity, street, setStreet, landmark, setLandmark, pincode, setPincode, addressType, setAddressType}:AddreessesProps) => {
-    
-  return(
-  <>
-     <h3>Manage Addresses</h3>
+const Addresses = ({
+  insertUserAddress,
+  resetForm,
+  message,
+  showPopup,
+  setShowPopup,
+  address,
+  setAddress,
+}: AddreessesProps) => {
+  const handleChangeEvent = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
+    setAddress((prev: any) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  return (
+    <>
+      <h3>Manage Addresses</h3>
       <div className="add-address-div">
-       <h4 className="add-new-address">ADD A NEW ADDRESS</h4>
+        <h4 className="add-new-address">ADD A NEW ADDRESS</h4>
         <form className="address-input">
-        <select value={country} onChange={(event)=>setCountry(event.target.value)}>
-            <option value='' disabled >Select your Country</option>
+          <select
+            name="country"
+            value={address.country}
+            onChange={handleChangeEvent}
+          >
+            <option value="" disabled>
+              Select your Country
+            </option>
             <option value="India">India</option>
             <option value="USA">USA</option>
             <option value="australia">australia</option>
-        </select>
-        <select value={state} onChange={(event)=>setState(event.target.value)}>
-            <option value='' disabled >Select your State</option>
-            <option value="Karnataka">Karnataka</option>
-            <option value="Kerala">Kerala</option>
-            <option value="Goa">Goa</option>
-            <option value="Delhi">Delhi</option>
-        </select>
-        <select value={district} onChange={(event)=>setDistrict(event.target.value)}>
-            <option value='' disabled >Select your District</option>
-            <option value="Bengaluru">Bengaluru</option>
-            <option value="Bagalkot">Bagalkot</option>
-            <option value="Mysore">Mysore</option>
-            <option value="Belagavi">Belagavi</option>
-        </select>
-        <input type="text" value={city} onChange={(event)=>setCity(event.target.value)} placeholder="Enter your city" />
-        <input type="text" value={street} onChange={(event)=>setStreet(event.target.value)} placeholder="Enter your Street"  />
-        <textarea className="landmark" rows={4} cols={10} value={landmark}  onChange={(event)=>setLandmark(event.target.value)} placeholder="Enter your Landmark"></textarea>
-        <input type="text" value={pincode} onChange={(event)=>setPincode(event.target.value)} placeholder='Enter your pincode' maxLength={6} />
-        <div>
+            <option value="Afghanistan">Afghanistan</option>
+            <option value="Algeria">Algeria</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Bangladesh">Bangladesh</option>
+            <option value="Pakistan">Pakistan</option>
+          </select>
+          <input
+            type="text"
+            name="state"
+            placeholder="Enter Your State"
+            value={address.state}
+            onChange={handleChangeEvent}
+          />
+          <input
+            type="text"
+            name="districts"
+            placeholder="Enter Your districts"
+            value={address.districts}
+            onChange={handleChangeEvent}
+          />
+          <input
+            type="text"
+            name="city"
+            value={address.city}
+            onChange={handleChangeEvent}
+            placeholder="Enter your city"
+          />
+          <input
+            type="text"
+            name="street"
+            value={address.street}
+            onChange={handleChangeEvent}
+            placeholder="Enter your Street"
+          />
+          <textarea
+            className="landmark"
+            rows={4}
+            cols={10}
+            name="landmark"
+            value={address.landmark}
+            onChange={handleChangeEvent}
+            placeholder="Enter your Landmark"
+          ></textarea>
+          <input
+            type="text"
+            name="pincode"
+            value={address.pincode}
+            onChange={handleChangeEvent}
+            placeholder="Enter your pincode"
+            maxLength={6}
+          />
+          <div>
             Address type
             <div className="address-radio-Btn">
-            <input type="radio" id="HOME" name="locationTypeTag" value='HOME'  checked={addressType === "HOME"} onChange={(event)=> setAddressType(event.target.value) }/>
-            <label htmlFor="HOME">Home</label>
-            <input type="radio" id="work" name="locationTypeTag" value='WORK' checked={addressType === "WORK"} onChange={(event)=> setAddressType(event?.target.value) }/>
-            <label htmlFor="work">Work</label>
-        </div>
-        </div>
+              <input
+                type="radio"
+                id="HOME"
+                name="user_address_status"
+                value="home"
+                checked={address.user_address_status === 'home'}
+                onChange={handleChangeEvent}
+              />
+              <label htmlFor="HOME">Home</label>
+              <input
+                type="radio"
+                id="work"
+                name="user_address_status"
+                value="work"
+                checked={address.user_address_status === 'work'}
+                onChange={handleChangeEvent}
+              />
+              <label htmlFor="work">Work</label>
+            </div>
+          </div>
         </form>
-         <div className="address-save-cancel-btn">
-            <Button text="Save" onClick={(insertUserAddress)}></Button>
-           <Button text="Cancel" onClick={(resetForm)}></Button>
-         </div>
+        <div className="save-cancel-btn">
+          <Button text="Save" onClick={insertUserAddress}></Button>
+          <Button text="Cancel" onClick={resetForm}></Button>
+        </div>
+
+        {showPopup && (
+          <div className="model-overlay">
+            <div className="modal-container">
+              <h4>{message}</h4>
+              <Button text="Ok" onClick={() => setShowPopup(false)}></Button>
+            </div>
+          </div>
+        )}
       </div>
-  </>
-  )
+    </>
+  );
+};
 
-}
+const EnhancedAddresses = withLoader(withErrorHandling(Addresses));
 
-const EnhancedAddresses = withLoader(withErrorHandling(Addresses))
+function AddressContainer() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const userAddressStatus = location?.state?.addressStatus;
 
-function AddressContainer () {
-    const navigate = useNavigate()
+  const [loading, setLoading] = useState<boolean>(false);
+  const [serverError, setServerError] = useState<Error | null>(null);
+  const [message, setMessage] = useState('');
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
-    const [loading, setLoading] = useState<boolean>(false)
-    const [serverError, setServerError] = useState<Error | null>(null);
-    const [country, setCountry] = useState('');
-    const [state, setState] = useState('');
-    const [district, setDistrict] = useState('');
-    const [city, setCity] = useState('');
-    const [street, setStreet] = useState('');
-    const [landmark, setLandmark] = useState('');
-    const [pincode, setPincode] = useState('');
-    const [addressType, setAddressType] = useState('');
+  const addressData = useSelector((state: any) => state.address.addressItem);
+  const [address, setAddress] = useState({
+    country: '',
+    state: '',
+    districts: '',
+    city: '',
+    street: '',
+    landmark: '',
+    pincode: '',
+    user_address_status: '',
+  });
 
-    const insertUserAddress = async ()=>{
-      try{
-       setLoading(true)
-       console.log({
-  country,
-  state,
-  district,
-  city,
-  street,
-  landmark,
-  pincode,
-  addressType
-});
-       const data = await createUserAddress(country, state, district, city, street, landmark, pincode, addressType)
-       alert(data.message)
-       navigate('/address')
-      }
-      catch(error){
-        setServerError(error as Error)
-      }
-      finally{
-     setLoading(false)
-      }
+  useEffect(() => {
+    const selectedAddress = addressData?.find(
+      (value: any) => value.user_address_status === userAddressStatus
+    );
+
+    if (selectedAddress) {
+      setAddress({
+        country: selectedAddress.country || '',
+        state: selectedAddress.state || '',
+        districts: selectedAddress.districts || '',
+        city: selectedAddress.city || '',
+        street: selectedAddress.street || '',
+        landmark: selectedAddress.landmark || '',
+        pincode: selectedAddress.pincode || '',
+        user_address_status: selectedAddress.user_address_status || '',
+      });
     }
+  }, [addressData, userAddressStatus]);
 
-    function resetForm (){
-        setCountry('');
-        setState('');
-        setDistrict('');
-        setCity('');
-        setStreet('');
-        setLandmark('');
-        setPincode('');
-        setAddressType('');
+  const insertUserAddress = async () => {
+    try {
+      setLoading(true);
+      console.log({
+        address,
+      });
+      if (userAddressStatus) {
+        const editData = await editAddress(address, userAddressStatus);
+        console.log('editData ', editData.message);
+        setMessage(editData.message);
+      } else {
+        const createData = await createUserAddress(address);
+        setMessage(createData.message);
+      }
+      setShowPopup(true);
+      navigate('/address');
+    } catch (error: any) {
+      alert(error.response?.data?.message);
+      setServerError(error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-  return(
+  const resetForm = useCallback(() => {
+    setAddress({
+      country: '',
+      state: '',
+      districts: '',
+      city: '',
+      street: '',
+      landmark: '',
+      pincode: '',
+      user_address_status: '',
+    });
+  }, []);
+
+  return (
     <EnhancedAddresses
-    insertUserAddress = {insertUserAddress} resetForm = {resetForm}
-    loading = {loading}
-    serverError = {serverError}
-    country = {country} setCountry = {setCountry}
-    state = {state}    setState = {setState}
-    district = {district} setDistrict = {setDistrict}
-    city = {city}     setCity = {setCity}
-    street = {street}   setStreet = {setStreet}
-    landmark = {landmark}  setLandmark = {setLandmark}
-    pincode = {pincode}  setPincode = {setPincode}
-    addressType = {addressType} setAddressType = {setAddressType}
+      insertUserAddress={insertUserAddress}
+      resetForm={resetForm}
+      loading={loading}
+      serverError={serverError}
+      setAddress={setAddress}
+      address={address}
+      message={message}
+      showPopup={showPopup}
+      setShowPopup={setShowPopup}
+      userAddressStatus={userAddressStatus}
     />
-  )
+  );
 }
 
-export default AddressContainer
+export default AddressContainer;
+
